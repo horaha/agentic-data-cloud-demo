@@ -1,0 +1,58 @@
+{
+  "name": "sql_mapping",
+  "type": "record",
+  "annotations": {
+    "displayName": "SQL Mapping Ruleset",
+    "description": "Ruleset for BigQuery Agent Text-to-SQL mapping."
+  },
+  "recordFields": [
+    {
+      "name": "type",
+      "type": "string",
+      "index": 1,
+      "annotations": {
+        "displayName": "Mapping Type",
+        "description": "e.g. SQL_Filter, SQL_Expression, Node_Attribute, Web_Analytics"
+      },
+      "constraints": {
+        "required": true
+      }
+    },
+    {
+      "name": "condition",
+      "type": "string",
+      "index": 2,
+      "annotations": {
+        "displayName": "SQL Filter Condition",
+        "description": "SQL WHERE clause or subquery filter"
+      }
+    },
+    {
+      "name": "expression",
+      "type": "string",
+      "index": 3,
+      "annotations": {
+        "displayName": "SQL Expression",
+        "description": "SQL mathematical or string expression"
+      }
+    },
+    {
+      "name": "attribute",
+      "type": "string",
+      "index": 4,
+      "annotations": {
+        "displayName": "Node Attribute Name",
+        "description": "Mapped column name representing node attribute"
+      }
+    },
+    {
+      "name": "table",
+      "type": "string",
+      "index": 5,
+      "annotations": {
+        "displayName": "Associated Table",
+        "description": "Associated BQ table for the mapping"
+      }
+    }
+  ]
+}
