@@ -20,31 +20,28 @@ The project is divided into two primary directories:
 
 ## Getting Started
 
-To run this demo, follow these two steps:
+To run this demo, you can spin up the entire stack with a single command on **Google Cloud Shell**.
 
-### Step 1: Provision Infrastructure
-Set up the necessary GCP resources (APIs, VPC, BigQuery dataset, GCS bucket, IAM, and Colab templates) using Terraform.
-* Refer to the [Terraform Guide](terraform/README.md) for detailed deployment steps.
+### Step 1: Clone Repository & Run Auto Setup
+
+In your Google Cloud Shell, clone this repository and execute the auto-setup script. This script automatically detects your active GCP project, configures variables, and deploys the GCP infrastructure using Terraform.
 
 ```bash
-cd terraform/infra
-# Copy and update variables
-cp terraform.tfvars.example terraform.tfvars
-# Deploy
-terraform init
-terraform apply
+git clone https://github.com/horaha/agentic-data-cloud-demo.git
+cd agentic-data-cloud-demo
+
+# Make sure you are in the correct active project
+gcloud config get-value project
+
+# Execute the setup script
+./setup.sh
 ```
 
 ### Step 2: Run Data Analytics & AI Notebooks
-Once the infrastructure is up, run the interactive analysis notebooks.
-* Refer to the [Analytics Guide](analytics/README.md) for dependency setup and notebook details.
+Once the infrastructure is up, you can run the interactive analysis notebooks.
+* Refer to the [Analytics Guide](analytics/README.md) for local python environment setup and notebook details.
+* You can also run these notebooks in **Colab Enterprise** or **Vertex AI Workbench** using the templates deployed by Terraform.
 
-```bash
-cd analytics
-# Install dependencies using uv
-uv sync
-# Open Jupyter Notebook or upload to Vertex AI Workbench/Colab Enterprise
-```
 
 ## License
 This project is licensed under the Apache 2.0 License - see the LICENSE details.
