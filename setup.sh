@@ -34,6 +34,17 @@ echo -e "감지된 GCP 프로젝트 ID: ${GREEN}$PROJECT_ID${NC}"
 echo -e "\n${YELLOW}GCP API 제어를 위해 Cloud Resource Manager API를 사전 활성화합니다...${NC}"
 gcloud services enable cloudresourcemanager.googleapis.com --project="$PROJECT_ID"
 
+# API 활성화 전파 대기 (최대 30초)
+echo -e "Cloud Resource Manager API 활성화 상태 확인 중..."
+for i in {1..15}; do
+    if gcloud services list --enabled --project="$PROJECT_ID" 2>/dev/null | grep -q "cloudresourcemanager.googleapis.com"; then
+        echo -e "${GREEN}Cloud Resource Manager API 활성화 완료!${NC}"
+        break
+    fi
+    echo -e "활성화 전파 대기 중... (${i}/15)"
+    sleep 2
+done
+
 # 2. 테라폼 설치 여부 검증 및 필요 시 자동 설치
 echo -e "\n${YELLOW}[2단계] Terraform CLI 가용 여부를 체크하는 중...${NC}"
 
