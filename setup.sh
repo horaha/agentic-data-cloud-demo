@@ -162,6 +162,18 @@ EOF
 
 echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: asia-northeast3, User: $USER_EMAIL)"
 
+# 3.3. 기존 충돌 가능성 있는 Colab 자원 정리 (자가 회복 안전장치)
+echo -e "\n${YELLOW}[3.3단계] 기존 리소스 충돌 방지를 위한 사전 정리 중...${NC}"
+if gcloud colab runtimes list --location=asia-northeast3 --project="$PROJECT_ID" 2>/dev/null | grep -q "adc-demo-runtime-asne3"; then
+    echo -e "이전 실습의 잔재 런타임(adc-demo-runtime-asne3)을 제거합니다..."
+    gcloud colab runtimes delete adc-demo-runtime-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet 2>/dev/null || true
+fi
+
+if gcloud colab runtime-templates list --location=asia-northeast3 --project="$PROJECT_ID" 2>/dev/null | grep -q "adc-demo-template-asne3"; then
+    echo -e "이전 실습의 잔재 템플릿(adc-demo-template-asne3)을 제거합니다..."
+    gcloud colab runtime-templates delete adc-demo-template-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet 2>/dev/null || true
+fi
+
 # 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
 echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 상태 확인 중...${NC}"
 
