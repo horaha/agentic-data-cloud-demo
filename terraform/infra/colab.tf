@@ -12,7 +12,7 @@ resource "google_colab_runtime_template" "colab_template_asne3" {
   }
 
   network_spec {
-    enable_internet_access = true
+    enable_internet_access = false
     network                = module.vpc.network_id
     subnetwork             = module.vpc.private_subnet_id
   }
