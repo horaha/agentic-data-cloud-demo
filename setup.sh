@@ -116,16 +116,30 @@ if [ ! -d "$TF_DIR" ]; then
     exit 1
 fi
 
-# 기존 설정된 프로젝트 ID 감지
+# 기존 설정된 프로젝트 ID 감지 (tfvars 및 tfstate 기반)
 PREV_PROJECT_ID=""
 if [ -f "$TF_DIR/terraform.tfvars" ]; then
     PREV_PROJECT_ID=$(sed -n 's/project_id\s*=\s*"\(.*\)"/\1/p' "$TF_DIR/terraform.tfvars" | tr -d ' ' 2>/dev/null || true)
 fi
 
-# 프로젝트 ID가 변경되었을 경우 상태 캐시 파일 제거 (충돌 방지)
+RESET_STATE=false
+
+# 1) tfvars 내부 프로젝트 ID가 다른 경우
 if [ -n "$PREV_PROJECT_ID" ] && [ "$PREV_PROJECT_ID" != "$PROJECT_ID" ]; then
-    echo -e "${YELLOW}[경고] 이전 사용된 GCP 프로젝트($PREV_PROJECT_ID)와 현재 프로젝트($PROJECT_ID)가 다릅니다.${NC}"
-    echo -e "${YELLOW}프로젝트가 변경되었으므로 기존 테라폼 상태 파일 및 캐시를 완전히 초기화합니다...${NC}"
+    RESET_STATE=true
+fi
+
+# 2) tfvars가 유실되었어도 tfstate가 존재하는데 현재 프로젝트 ID 정보가 없는 경우
+if [ -f "$TF_DIR/terraform.tfstate" ]; then
+    if ! grep -q "$PROJECT_ID" "$TF_DIR/terraform.tfstate" 2>/dev/null; then
+        RESET_STATE=true
+    fi
+fi
+
+# 프로젝트 ID 변경 감지 시 상태 파일 및 캐시 강제 제거
+if [ "$RESET_STATE" = true ]; then
+    echo -e "${YELLOW}[경고] 이전 사용된 GCP 프로젝트 설정이 현재 프로젝트($PROJECT_ID)와 다릅니다.${NC}"
+    echo -e "${YELLOW}인프라 정합성을 위해 기존 테라폼 상태 파일 및 캐시를 완전히 초기화합니다...${NC}"
     rm -rf "$TF_DIR/.terraform" "$TF_DIR/terraform.tfstate" "$TF_DIR/terraform.tfstate.backup" "$TF_DIR/.terraform.lock.hcl"
 fi
 
