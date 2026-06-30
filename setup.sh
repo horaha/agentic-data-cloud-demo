@@ -162,63 +162,6 @@ EOF
 
 echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: asia-northeast3, User: $USER_EMAIL)"
 
-# 3.3. 기존 충돌 가능성 있는 Colab 자원 정리 (자가 회복 안전장치)
-echo -e "\n${YELLOW}[3.3단계] 기존 리소스 충돌 방지를 위한 사전 정리 중...${NC}"
-if gcloud colab runtimes list --location=asia-northeast3 --project="$PROJECT_ID" 2>/dev/null | grep -q "adc-demo-runtime-asne3"; then
-    echo -e "이전 실습의 잔재 런타임(adc-demo-runtime-asne3)을 제거합니다..."
-    gcloud colab runtimes delete adc-demo-runtime-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet || true
-    echo -e "런타임 삭제 처리를 위해 잠시 대기합니다 (15초)..."
-    sleep 15
-fi
-
-if gcloud colab runtime-templates list --location=asia-northeast3 --project="$PROJECT_ID" 2>/dev/null | grep -q "adc-demo-template-asne3"; then
-    echo -e "이전 실습의 잔재 템플릿(adc-demo-template-asne3)을 제거합니다..."
-    gcloud colab runtime-templates delete adc-demo-template-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet || true
-fi
-
-# 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
-echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 상태 확인 중...${NC}"
-
-# 프로젝트 번호 조회
-PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)" 2>/dev/null || true)
-
-CREATE_REQUIRED=false
-
-if [ -n "$PROJECT_NUMBER" ]; then
-    BQDTS_SA="service-${PROJECT_NUMBER}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
-    DATAPLEX_SA="service-${PROJECT_NUMBER}@gcp-sa-dataplex.iam.gserviceaccount.com"
-
-    # BigQuery DTS 서비스 에이전트 검증
-    if ! gcloud iam service-accounts describe "$BQDTS_SA" --project="$PROJECT_ID" &>/dev/null; then
-        echo -e "BigQuery Data Transfer 서비스 에이전트가 존재하지 않아 생성을 시도합니다."
-        gcloud beta services identity create --service=bigquerydatatransfer.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
-        CREATE_REQUIRED=true
-    else
-        echo -e "BigQuery Data Transfer 서비스 에이전트: ${GREEN}준비 완료 (OK)${NC}"
-    fi
-
-    # Dataplex 서비스 에이전트 검증
-    if ! gcloud iam service-accounts describe "$DATAPLEX_SA" --project="$PROJECT_ID" &>/dev/null; then
-        echo -e "Dataplex 서비스 에이전트가 존재하지 않아 생성을 시도합니다."
-        gcloud beta services identity create --service=dataplex.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
-        CREATE_REQUIRED=true
-    else
-        echo -e "Dataplex 서비스 에이전트: ${GREEN}준비 완료 (OK)${NC}"
-    fi
-else
-    # 예외 상황: 프로젝트 번호를 가져올 수 없을 경우 폴백 처리
-    gcloud beta services identity create --service=bigquerydatatransfer.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
-    gcloud beta services identity create --service=dataplex.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
-    CREATE_REQUIRED=true
-fi
-
-if [ "$CREATE_REQUIRED" = true ]; then
-    echo -e "서비스 에이전트 계정 전파를 위해 잠시 대기합니다 (10초)..."
-    sleep 10
-else
-    echo -e "${GREEN}필수 서비스 에이전트가 이미 모두 존재하므로 대기 시간(10초)을 생킵합니다.${NC}"
-fi
-
 # 4. 테라폼 빌드 가동
 echo -e "\n${YELLOW}[4단계] 테라폼 초기화(Terraform Init) 실행 중...${NC}"
 cd "$TF_DIR"
