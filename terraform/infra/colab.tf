@@ -15,5 +15,5 @@ resource "google_colab_runtime_template" "colab_template_asne3" {
     subnetwork             = module.vpc.private_subnet_id
   }
 
-  depends_on = [module.vpc, module.apis]
+  depends_on = [module.vpc, time_sleep.wait_for_service_agents]
 }
