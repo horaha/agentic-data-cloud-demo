@@ -30,13 +30,70 @@ fi
 
 echo -e "감지된 GCP 프로젝트 ID: ${GREEN}$PROJECT_ID${NC}"
 
-# 2. 테라폼 설치 여부 검증
+# Cloud Resource Manager API 사전 활성화 (테라폼 API 관리를 위해 선행 활성화 필수)
+echo -e "\n${YELLOW}GCP API 제어를 위해 Cloud Resource Manager API를 사전 활성화합니다...${NC}"
+gcloud services enable cloudresourcemanager.googleapis.com --project="$PROJECT_ID"
+
+# 2. 테라폼 설치 여부 검증 및 필요 시 자동 설치
 echo -e "\n${YELLOW}[2단계] Terraform CLI 가용 여부를 체크하는 중...${NC}"
+
+INSTALL_TERRAFORM=false
+
 if ! command -v terraform &> /dev/null; then
-    echo -e "${RED}[ERROR] terraform 명령어를 찾을 수 없습니다.${NC}"
-    echo -e "Cloud Shell을 사용하거나, 로컬 환경에 Terraform을 설치한 뒤 실행해 주세요."
-    exit 1
+    INSTALL_TERRAFORM=true
+else
+    # terraform version 출력을 가져와 stub 여부 판별 (안내 문구 포함 시 stub으로 간주)
+    TF_VER_OUT=$(terraform version 2>&1 || echo "failed")
+    if [[ "$TF_VER_OUT" == *"install terraform"* ]] || \
+       [[ "$TF_VER_OUT" == *"Follow the instructions"* ]] || \
+       [[ "$TF_VER_OUT" == "failed" ]]; then
+        INSTALL_TERRAFORM=true
+    fi
 fi
+
+if [ "$INSTALL_TERRAFORM" = true ]; then
+    echo -e "${YELLOW}Terraform이 설치되어 있지 않거나 정상 작동하지 않습니다. 자동 설치를 시작합니다...${NC}"
+    
+    # OS 및 패키지 매니저 확인 (apt-get 지원 여부)
+    if command -v apt-get &> /dev/null; then
+        echo -e "Debian/Ubuntu 계열 환경(예: Cloud Shell)이 감지되었습니다. apt를 통해 설치를 진행합니다."
+        
+        # 의존성 패키지 설치
+        sudo apt-get update -y && sudo apt-get install -y gnupg software-properties-common curl
+        
+        # HashiCorp GPG 키 및 저장소 등록
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        
+        # 테라폼 설치
+        sudo apt-get update -y && sudo apt-get install -y terraform
+        
+        # 설치 확인
+        if ! terraform version &> /dev/null; then
+            echo -e "${RED}[ERROR] Terraform 자동 설치에 실패했습니다. 수동으로 설치해 주세요.${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}Terraform 설치가 완료되었습니다!${NC}"
+        
+        # Cloud Shell 세션 유지 설정 자동 등록 (선택 사항)
+        if [ -d "$HOME" ] && { [ ! -f "$HOME/.customize_environment" ] || ! grep -q "terraform" "$HOME/.customize_environment" 2>/dev/null; }; then
+            echo -e "${BLUE}Cloud Shell 세션 재연결 시 테라폼을 유지하기 위해 $HOME/.customize_environment 파일에 설정을 추가합니다.${NC}"
+            cat << 'EOF' >> "$HOME/.customize_environment"
+# Auto-installed by setup.sh
+if ! terraform version &> /dev/null; then
+    wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+    sudo apt-get update && sudo apt-get install -y terraform
+fi
+EOF
+        fi
+    else
+        echo -e "${RED}[ERROR] 자동 설치는 Debian/Ubuntu 계열 환경(GCP Cloud Shell 포함)만 지원합니다.${NC}"
+        echo -e "현재 환경에서는 수동으로 테라폼을 설치한 후 다시 실행해 주세요."
+        exit 1
+    fi
+fi
+
 echo -e "Terraform 가용 여부: ${GREEN}OK${NC}"
 
 # 3. terraform.tfvars 자동 생성 및 프로젝트 ID 설정
