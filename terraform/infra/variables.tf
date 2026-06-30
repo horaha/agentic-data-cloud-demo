@@ -8,3 +8,9 @@ variable "region" {
   type        = string
   default     = "asia-northeast3"
 }
+
+variable "runtime_user" {
+  description = "The email of the user owning the Colab Enterprise runtime"
+  type        = string
+  default     = ""
+}

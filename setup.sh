@@ -147,13 +147,20 @@ if [ "$RESET_STATE" = true ]; then
     rm -rf "$TF_DIR/.terraform" "$TF_DIR/terraform.tfstate" "$TF_DIR/terraform.tfstate.backup" "$TF_DIR/.terraform.lock.hcl"
 fi
 
+# 실행 사용자 이메일 조회 (Colab 런타임 소유자 지정을 위해 필요)
+USER_EMAIL=$(gcloud config get-value account 2>/dev/null || true)
+if [ -z "$USER_EMAIL" ]; then
+    USER_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null || true)
+fi
+
 # terraform.tfvars 생성
 cat <<EOF > "$TF_DIR/terraform.tfvars"
-project_id = "$PROJECT_ID"
-region     = "asia-northeast3"
+project_id   = "$PROJECT_ID"
+region       = "asia-northeast3"
+runtime_user = "$USER_EMAIL"
 EOF
 
-echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: asia-northeast3)"
+echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: asia-northeast3, User: $USER_EMAIL)"
 
 # 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
 echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 상태 확인 중...${NC}"
