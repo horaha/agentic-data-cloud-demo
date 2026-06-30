@@ -17,7 +17,7 @@ resource "google_colab_runtime_template" "colab_template_asne3" {
     subnetwork             = module.vpc.private_subnet_id
   }
 
-  shielded_instance_config {
+  shielded_vm_config {
     enable_secure_boot = true
   }
 
