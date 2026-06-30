@@ -29,6 +29,7 @@
 ```bash
 git clone https://github.com/horaha/agentic-data-cloud-demo.git
 cd agentic-data-cloud-demo
+git pull origin main
 
 # 활성화된 GCP 프로젝트가 맞는지 확인
 gcloud config get-value project

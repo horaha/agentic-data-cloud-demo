@@ -29,6 +29,7 @@ In your Google Cloud Shell, clone this repository and execute the auto-setup scr
 ```bash
 git clone https://github.com/horaha/agentic-data-cloud-demo.git
 cd agentic-data-cloud-demo
+git pull origin main
 
 # Make sure you are in the correct active project
 gcloud config get-value project
@@ -40,7 +41,7 @@ gcloud config get-value project
 ### Step 2: Run Data Analytics & AI Notebooks
 Once the infrastructure is up, you can run the interactive analysis notebooks.
 * Refer to the [Analytics Guide](analytics/README.md) for local python environment setup and notebook details.
-* You can also run these notebooks in **Colab Enterprise** or **Vertex AI Workbench** using the templates deployed by Terraform.
+* You can also run these notebooks in **Colab Enterprise** templates deployed by Terraform.
 
 
 ## License
