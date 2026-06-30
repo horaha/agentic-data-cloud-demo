@@ -6,6 +6,10 @@
 
 set -e # 에러 발생 시 즉시 중단
 
+# 스크립트 실행 도중 비정상 종료되어도 터미널 실행 경로(pwd)를 원래대로 복원하는 안전장치
+ORIGINAL_DIR=$(pwd)
+trap 'cd "$ORIGINAL_DIR" &>/dev/null' EXIT
+
 # 색상 정의
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -119,7 +123,7 @@ fi
 # 기존 설정된 프로젝트 ID 감지 (tfvars 및 tfstate 기반)
 PREV_PROJECT_ID=""
 if [ -f "$TF_DIR/terraform.tfvars" ]; then
-    PREV_PROJECT_ID=$(sed -n 's/project_id\s*=\s*"\(.*\)"/\1/p' "$TF_DIR/terraform.tfvars" | tr -d ' ' 2>/dev/null || true)
+    PREV_PROJECT_ID=$(sed -n 's/project_id[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' "$TF_DIR/terraform.tfvars" | tr -d ' ' 2>/dev/null || true)
 fi
 
 RESET_STATE=false
@@ -152,12 +156,47 @@ EOF
 echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: asia-northeast3)"
 
 # 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
-echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 계정을 활성화하는 중...${NC}"
-echo -e "BigQuery Data Transfer 및 Dataplex 서비스 에이전트를 활성화합니다."
-gcloud beta services identity create --service=bigquerydatatransfer.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
-gcloud beta services identity create --service=dataplex.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
-echo -e "서비스 에이전트 계정 전파를 위해 잠시 대기합니다 (10초)..."
-sleep 10
+echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 상태 확인 중...${NC}"
+
+# 프로젝트 번호 조회
+PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)" 2>/dev/null || true)
+
+CREATE_REQUIRED=false
+
+if [ -n "$PROJECT_NUMBER" ]; then
+    BQDTS_SA="service-${PROJECT_NUMBER}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
+    DATAPLEX_SA="service-${PROJECT_NUMBER}@gcp-sa-dataplex.iam.gserviceaccount.com"
+
+    # BigQuery DTS 서비스 에이전트 검증
+    if ! gcloud iam service-accounts describe "$BQDTS_SA" --project="$PROJECT_ID" &>/dev/null; then
+        echo -e "BigQuery Data Transfer 서비스 에이전트가 존재하지 않아 생성을 시도합니다."
+        gcloud beta services identity create --service=bigquerydatatransfer.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
+        CREATE_REQUIRED=true
+    else
+        echo -e "BigQuery Data Transfer 서비스 에이전트: ${GREEN}준비 완료 (OK)${NC}"
+    fi
+
+    # Dataplex 서비스 에이전트 검증
+    if ! gcloud iam service-accounts describe "$DATAPLEX_SA" --project="$PROJECT_ID" &>/dev/null; then
+        echo -e "Dataplex 서비스 에이전트가 존재하지 않아 생성을 시도합니다."
+        gcloud beta services identity create --service=dataplex.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
+        CREATE_REQUIRED=true
+    else
+        echo -e "Dataplex 서비스 에이전트: ${GREEN}준비 완료 (OK)${NC}"
+    fi
+else
+    # 예외 상황: 프로젝트 번호를 가져올 수 없을 경우 폴백 처리
+    gcloud beta services identity create --service=bigquerydatatransfer.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
+    gcloud beta services identity create --service=dataplex.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
+    CREATE_REQUIRED=true
+fi
+
+if [ "$CREATE_REQUIRED" = true ]; then
+    echo -e "서비스 에이전트 계정 전파를 위해 잠시 대기합니다 (10초)..."
+    sleep 10
+else
+    echo -e "${GREEN}필수 서비스 에이전트가 이미 모두 존재하므로 대기 시간(10초)을 생킵합니다.${NC}"
+fi
 
 # 4. 테라폼 빌드 가동
 echo -e "\n${YELLOW}[4단계] 테라폼 초기화(Terraform Init) 실행 중...${NC}"
@@ -171,7 +210,7 @@ terraform apply -auto-approve
 # 5. 구축 완료 안내 및 요약 정보 출력
 echo -e "\n${GREEN}======================================================================${NC}"
 echo -e "${GREEN}  인프라 구축이 완료되었습니다! 아래 생성 정보 요약을 참고하세요.   ${NC}"
-echo -e GREEN="======================================================================"
+echo -e "${GREEN}======================================================================${NC}"
 
 echo -e "\n${YELLOW}--- [구축된 주요 리소스 요약] ---${NC}"
 terraform output
