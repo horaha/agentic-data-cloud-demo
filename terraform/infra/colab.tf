@@ -17,6 +17,10 @@ resource "google_colab_runtime_template" "colab_template_asne3" {
     subnetwork             = module.vpc.private_subnet_id
   }
 
+  shielded_instance_config {
+    enable_secure_boot = true
+  }
+
   depends_on = [module.vpc, time_sleep.wait_for_service_agents]
 }
 
