@@ -151,8 +151,8 @@ EOF
 
 echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: asia-northeast3)"
 
-# 3.5. GCP 서비스 에이전트(Service Agent) 강제 생성 및 대기
-echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 계정을 강제 활성화하는 중...${NC}"
+# 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
+echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 계정을 활성화하는 중...${NC}"
 echo -e "BigQuery Data Transfer 및 Dataplex 서비스 에이전트를 활성화합니다."
 gcloud beta services identity create --service=bigquerydatatransfer.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true
 gcloud beta services identity create --service=dataplex.googleapis.com --project="$PROJECT_ID" 2>/dev/null || true

@@ -6,6 +6,12 @@ module "apis" {
   apis = [
     # Cloud Resource Manager (테라폼 API 관리)
     "cloudresourcemanager.googleapis.com",
+    # BigQuery (기본 데이터 클라우드 서비스)
+    "bigquery.googleapis.com",
+    # BigQuery Connection (Vertex AI 등 외부 모델 연동용)
+    "bigqueryconnection.googleapis.com",
+    # Colab Enterprise (BigQuery Studio 내 Jupyter 노트북 실행)
+    "colabenterprise.googleapis.com",
     # Compute Engine (기본 네트워크 및 인프라 구성)
     "compute.googleapis.com",
     # IAM (서비스 계정 및 권한 관리)
