@@ -4,7 +4,7 @@ module "apis" {
 
   project_id = var.project_id
   apis = [
-    # Cloud Resource Manager (테라폼 API 관리를 위해 필수)
+    # Cloud Resource Manager (테라폼 API 관리)
     "cloudresourcemanager.googleapis.com",
     # Compute Engine (기본 네트워크 및 인프라 구성)
     "compute.googleapis.com",
@@ -22,7 +22,7 @@ module "apis" {
     "storage.googleapis.com",
     # BigQuery Data Transfer Service (외부 데이터 소스 자동 적재)
     "bigquerydatatransfer.googleapis.com",
-    # Data Catalog (메타데이터 중앙 검색 - Knowledge Catalog 필수)
+    # Data Catalog (메타데이터 중앙 검색 - Knowledge Catalog)
     "datacatalog.googleapis.com",
     # Dataplex (데이터 거버넌스, 데이터 프로파일 및 품질 스캔)
     "dataplex.googleapis.com",
@@ -32,7 +32,7 @@ module "apis" {
     "cloudaicompanion.googleapis.com",
     # BigQuery Studio 내 Gemini 통합 및 AI Insights 기능 활성화
     "bigqueryunified.googleapis.com",
-    # BigQuery Data Analytics Gemini API 활성화 (BigQuery Conversational Analytics 필수)
+    # BigQuery Data Analytics Gemini API 활성화 (BigQuery Conversational Analytics)
     "geminidataanalytics.googleapis.com"
   ]
 }
