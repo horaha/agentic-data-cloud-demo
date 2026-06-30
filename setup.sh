@@ -30,15 +30,20 @@ fi
 
 echo -e "감지된 GCP 프로젝트 ID: ${GREEN}$PROJECT_ID${NC}"
 
-# Cloud Resource Manager API 사전 활성화 (테라폼 API 관리를 위해 선행 활성화 필수)
-echo -e "\n${YELLOW}GCP API 제어를 위해 Cloud Resource Manager API를 사전 활성화합니다...${NC}"
+# 필수 API 사전 활성화 (종속성이 있는 API의 테라폼 Precondition Failure 방지)
+echo -e "\n${YELLOW}테라폼 실행 전 필수 API들을 사전 활성화합니다...${NC}"
 gcloud services enable cloudresourcemanager.googleapis.com --project="$PROJECT_ID"
+gcloud services enable aiplatform.googleapis.com --project="$PROJECT_ID"
+gcloud services enable colabenterprise.googleapis.com --project="$PROJECT_ID"
 
 # API 활성화 전파 대기 (최대 30초)
-echo -e "Cloud Resource Manager API 활성화 상태 확인 중..."
+echo -e "필수 API 활성화 상태 확인 중..."
 for i in {1..15}; do
-    if gcloud services list --enabled --project="$PROJECT_ID" 2>/dev/null | grep -q "cloudresourcemanager.googleapis.com"; then
-        echo -e "${GREEN}Cloud Resource Manager API 활성화 완료!${NC}"
+    ENABLED_SERVICES=$(gcloud services list --enabled --project="$PROJECT_ID" 2>/dev/null || true)
+    if echo "$ENABLED_SERVICES" | grep -q "cloudresourcemanager.googleapis.com" && \
+       echo "$ENABLED_SERVICES" | grep -q "aiplatform.googleapis.com" && \
+       echo "$ENABLED_SERVICES" | grep -q "colabenterprise.googleapis.com"; then
+        echo -e "${GREEN}필수 API(Resource Manager, AI Platform, Colab Enterprise) 활성화 완료!${NC}"
         break
     fi
     echo -e "활성화 전파 대기 중... (${i}/15)"
