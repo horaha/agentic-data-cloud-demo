@@ -48,12 +48,12 @@ Dataplex Catalog에 등록된 비즈니스 용어는 자연어 설명 외에도 
 * **예상 결과 SQL:**
   ```sql
   SELECT COUNT(DISTINCT u.id) AS vip_user_count
-  FROM `junho-preview-playground.thelook_ecommerce.users` u
-  JOIN `junho-preview-playground.thelook_ecommerce.orders` o ON u.id = o.user_id
+  FROM `your-project-id.thelook_ecommerce.users` u
+  JOIN `your-project-id.thelook_ecommerce.orders` o ON u.id = o.user_id
   WHERE u.id IN (
     -- 💡 Dataplex Aspect에서 추출된 VIP 고객 필터 스니펫 주입
     SELECT user_id 
-    FROM `junho-preview-playground.thelook_ecommerce.order_items` 
+    FROM `your-project-id.thelook_ecommerce.order_items` 
     GROUP BY user_id 
     HAVING SUM(sale_price) >= 500 OR COUNT(DISTINCT order_id) >= 5
   )
@@ -73,12 +73,12 @@ Dataplex Catalog에 등록된 비즈니스 용어는 자연어 설명 외에도 
     -- 💡 Dataplex Aspect에서 추출된 세션 기반 이탈율 공식 주입
     COUNT(DISTINCT CASE WHEN e.event_type = 'Cart' AND e.session_id NOT IN (
       SELECT DISTINCT session_id 
-      FROM `junho-preview-playground.thelook_ecommerce.events` 
+      FROM `your-project-id.thelook_ecommerce.events` 
       WHERE event_type = 'Purchase'
     ) THEN e.session_id END) / 
     COUNT(DISTINCT CASE WHEN e.event_type = 'Cart' THEN e.session_id END) * 100 AS cart_abandonment_rate
-  FROM `junho-preview-playground.thelook_ecommerce.events` e
-  JOIN `junho-preview-playground.thelook_ecommerce.users` u ON e.user_id = u.id
+  FROM `your-project-id.thelook_ecommerce.events` e
+  JOIN `your-project-id.thelook_ecommerce.users` u ON e.user_id = u.id
   GROUP BY marketing_channel
   ORDER BY cart_abandonment_rate DESC;
   ```
@@ -95,8 +95,8 @@ Dataplex Catalog에 등록된 비즈니스 용어는 자연어 설명 외에도 
     -- 💡 취소/반품 비율 집계식 적용
     COUNTIF(oi.status IN ('Returned', 'Cancelled')) / COUNT(*) * 100 AS refund_rate,
     COUNT(oi.id) AS total_orders
-  FROM `junho-preview-playground.thelook_ecommerce.order_items` oi
-  JOIN `junho-preview-playground.thelook_ecommerce.products` p ON oi.product_id = p.id
+  FROM `your-project-id.thelook_ecommerce.order_items` oi
+  JOIN `your-project-id.thelook_ecommerce.products` p ON oi.product_id = p.id
   WHERE p.category = 'Women'
     -- 💡 마진율 공식 필터링 적용
     AND ((p.retail_price - p.cost) / p.retail_price * 100) >= 40
@@ -115,11 +115,11 @@ Dataplex Catalog에 등록된 비즈니스 용어는 자연어 설명 외에도 
   SELECT 
     traffic_source AS signup_channel,
     COUNT(*) AS user_count
-  FROM `junho-preview-playground.thelook_ecommerce.users`
+  FROM `your-project-id.thelook_ecommerce.users`
   WHERE id NOT IN (
     -- 💡 최근 90일간 주문 기록이 존재하지 않는 이탈 필터 삽입
     SELECT DISTINCT user_id 
-    FROM `junho-preview-playground.thelook_ecommerce.orders` 
+    FROM `your-project-id.thelook_ecommerce.orders` 
     WHERE created_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 90 DAY)
   )
   GROUP BY signup_channel
