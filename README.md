@@ -29,6 +29,10 @@ In your Google Cloud Shell, clone this repository and execute the auto-setup scr
 ```bash
 git clone https://github.com/horaha/agentic-data-cloud-demo.git
 cd agentic-data-cloud-demo
+
+# Make sure you are in the correct active project
+gcloud config get-value project
+
 ./setup.sh
 ```
 
