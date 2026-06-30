@@ -37,6 +37,8 @@ module "apis" {
     # BigQuery Studio 내 Gemini 통합 및 AI Insights 기능 활성화
     "bigqueryunified.googleapis.com",
     # BigQuery Data Analytics Gemini API 활성화 (BigQuery Conversational Analytics)
-    "geminidataanalytics.googleapis.com"
+    "geminidataanalytics.googleapis.com",
+    # Dataform (BigQuery SQL ELT 파이프라인 관리)
+    "dataform.googleapis.com"
   ]
 }
