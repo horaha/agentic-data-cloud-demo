@@ -23,10 +23,11 @@ uv sync
   - [07_glossary_graph_setup.ipynb](notebooks/07_glossary_graph_setup.ipynb): Loads the graph-specific business glossary and links graph tables.
   - [08_bigquery_ai_ml_demo.ipynb](notebooks/08_bigquery_ai_ml_demo.ipynb): BigQuery Generative AI & ML analytics (remote LLM, embeddings, vector search).
   - [09_bigquery_ai_functions.ipynb](notebooks/09_bigquery_ai_functions.ipynb): BigQuery high-level AI functions (AI.CLASSIFY, AI.SIMILARITY, AI.IF, AI.SEARCH, Distillation).
-  - [thelook_test.ipynb](notebooks/thelook_test.ipynb): Basic exploratory analysis template.
 
 - `resources/`: Supporting configuration and schema mapping files.
   - [agent_test_queries.md](resources/agent_test_queries.md): Verification guide and physical mapping scenarios.
-  - [aspect_physical_mapping.json](resources/aspect_physical_mapping.json): Aspect schema definition for physical mapping.
+  - [aspect_sql_mapping.json](resources/aspect_sql_mapping.json): Aspect schema definition for SQL mapping.
+  - [aspect_graph_mapping.json](resources/aspect_graph_mapping.json): Aspect schema definition for graph mapping.
   - [business_glossary.json](resources/business_glossary.json): The custom Business Glossary terms.
+  - [business_glossary_graph.json](resources/business_glossary_graph.json): The custom Business Glossary terms for graph tables.
 - `.venv/`: Python virtual environment for installing dependencies.
