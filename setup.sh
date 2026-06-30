@@ -107,13 +107,26 @@ fi
 
 echo -e "Terraform 가용 여부: ${GREEN}OK${NC}"
 
-# 3. terraform.tfvars 자동 생성 및 프로젝트 ID 설정
+# 3. terraform.tfvars 자동 생성 및 프로젝트 ID 설정 (변경 감지 시 초기화)
 echo -e "\n${YELLOW}[3단계] 테라폼 환경 변수 파일(terraform.tfvars) 설정 중...${NC}"
 TF_DIR="terraform/infra"
 
 if [ ! -d "$TF_DIR" ]; then
     echo -e "${RED}[ERROR] 테라폼 인프라 디렉토리($TF_DIR)를 찾을 수 없습니다.${NC}"
     exit 1
+fi
+
+# 기존 설정된 프로젝트 ID 감지
+PREV_PROJECT_ID=""
+if [ -f "$TF_DIR/terraform.tfvars" ]; then
+    PREV_PROJECT_ID=$(sed -n 's/project_id\s*=\s*"\(.*\)"/\1/p' "$TF_DIR/terraform.tfvars" | tr -d ' ' 2>/dev/null || true)
+fi
+
+# 프로젝트 ID가 변경되었을 경우 상태 캐시 파일 제거 (충돌 방지)
+if [ -n "$PREV_PROJECT_ID" ] && [ "$PREV_PROJECT_ID" != "$PROJECT_ID" ]; then
+    echo -e "${YELLOW}[경고] 이전 사용된 GCP 프로젝트($PREV_PROJECT_ID)와 현재 프로젝트($PROJECT_ID)가 다릅니다.${NC}"
+    echo -e "${YELLOW}프로젝트가 변경되었으므로 기존 테라폼 상태 파일 및 캐시를 완전히 초기화합니다...${NC}"
+    rm -rf "$TF_DIR/.terraform" "$TF_DIR/terraform.tfstate" "$TF_DIR/terraform.tfstate.backup" "$TF_DIR/.terraform.lock.hcl"
 fi
 
 # terraform.tfvars 생성
