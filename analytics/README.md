@@ -2,15 +2,6 @@
 
 This directory is used for analyzing and testing datasets, specifically the BigQuery public dataset `thelook_ecommerce`.
 
-## Dependency Management & Setup
-
-This project manages dependencies using `pyproject.toml`. We recommend using **[uv](https://github.com/astral-sh/uv)** for fast and reliable environment synchronization.
-
-```bash
-# Sync dependencies and set up the virtual environment
-uv sync
-```
-
 ## Contents
 
 - `notebooks/`: Jupyter Notebooks (`.ipynb`) for interactive analysis and metadata setup.
@@ -29,4 +20,4 @@ uv sync
   - [aspect_graph_mapping.json](resources/aspect_graph_mapping.json): Aspect schema definition for graph mapping.
   - [business_glossary.json](resources/business_glossary.json): The custom Business Glossary terms.
   - [business_glossary_graph.json](resources/business_glossary_graph.json): The custom Business Glossary terms for graph tables.
-- `.venv/`: Python virtual environment for installing dependencies.
+

@@ -2,15 +2,6 @@
 
 이 디렉터리는 BigQuery 퍼블릭 데이터셋인 `thelook_ecommerce`를 탐색, 분석 및 테스트하기 위한 공간입니다.
 
-## 의존성 관리 및 설치
-
-이 프로젝트는 `pyproject.toml`을 기반으로 의존성을 관리하며, 빠르고 효율적인 환경 구축을 위해 **[uv](https://github.com/astral-sh/uv)** 사용을 권장합니다.
-
-```bash
-# 의존성 설치 및 가상환경 동기화
-uv sync
-```
-
 ## 구성 내용
 
 - `notebooks/`: 대화형 분석 및 메타데이터 설정을 위한 Jupyter 노트북 파일들
@@ -29,4 +20,3 @@ uv sync
   - [aspect_graph_mapping.json](resources/aspect_graph_mapping.json): 그래프 매핑을 위한 Dataplex Aspect의 JSON 스키마 정의.
   - [business_glossary.json](resources/business_glossary.json): 비즈니스 용어 정의 메타데이터.
   - [business_glossary_graph.json](resources/business_glossary_graph.json): 그래프 테이블용 비즈니스 용어 정의 메타데이터.
-- `.venv/`: 분석 작업에 필요한 라이브러리들이 설치된 파이프라인 독립형 가상환경.
