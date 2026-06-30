@@ -166,12 +166,14 @@ echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $P
 echo -e "\n${YELLOW}[3.3단계] 기존 리소스 충돌 방지를 위한 사전 정리 중...${NC}"
 if gcloud colab runtimes list --location=asia-northeast3 --project="$PROJECT_ID" 2>/dev/null | grep -q "adc-demo-runtime-asne3"; then
     echo -e "이전 실습의 잔재 런타임(adc-demo-runtime-asne3)을 제거합니다..."
-    gcloud colab runtimes delete adc-demo-runtime-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet 2>/dev/null || true
+    gcloud colab runtimes delete adc-demo-runtime-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet || true
+    echo -e "런타임 삭제 처리를 위해 잠시 대기합니다 (15초)..."
+    sleep 15
 fi
 
 if gcloud colab runtime-templates list --location=asia-northeast3 --project="$PROJECT_ID" 2>/dev/null | grep -q "adc-demo-template-asne3"; then
     echo -e "이전 실습의 잔재 템플릿(adc-demo-template-asne3)을 제거합니다..."
-    gcloud colab runtime-templates delete adc-demo-template-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet 2>/dev/null || true
+    gcloud colab runtime-templates delete adc-demo-template-asne3 --location=asia-northeast3 --project="$PROJECT_ID" --quiet || true
 fi
 
 # 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
