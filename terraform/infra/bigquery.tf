@@ -5,8 +5,9 @@ data "google_project" "project" {
 
 # BigQuery Data Transfer Service Agent 생성 보장
 resource "google_project_service_identity" "bigquery_dts_sa" {
-  project = var.project_id
-  service = "bigquerydatatransfer.googleapis.com"
+  provider = google-beta
+  project  = var.project_id
+  service  = "bigquerydatatransfer.googleapis.com"
   depends_on = [module.apis]
 }
 
@@ -46,8 +47,9 @@ resource "google_bigquery_data_transfer_config" "thelook_copy" {
 
 # Dataplex Service Agent 생성 보장
 resource "google_project_service_identity" "dataplex_sa" {
-  project = var.project_id
-  service = "dataplex.googleapis.com"
+  provider = google-beta
+  project  = var.project_id
+  service  = "dataplex.googleapis.com"
   depends_on = [module.apis]
 }
 
