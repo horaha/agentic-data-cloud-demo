@@ -3,11 +3,11 @@ data "google_project" "project" {
   depends_on = [module.apis]
 }
 
-# API 활성화 후 서비스 에이전트 자동 생성을 위해 대기 처리 (30초)
+# API 활성화 후 서비스 에이전트 전파를 위해 추가 대기 처리 (10초)
 resource "time_sleep" "wait_for_service_agents" {
   depends_on = [module.apis]
 
-  create_duration = "30s"
+  create_duration = "10s"
 }
 
 # BigQuery Data Transfer service agent 권한 부여
