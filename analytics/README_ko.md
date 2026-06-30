@@ -19,10 +19,9 @@ uv sync
   - [03_schema_descriptions.ipynb](notebooks/03_schema_descriptions.ipynb): Dataplex DataScans를 활용하여 컬럼 한글 설명을 자동으로 주입하고 BigQuery 스키마와 동기화하는 노트북.
   - [04_dataset_insights.ipynb](notebooks/04_dataset_insights.ipynb): 데이터셋 탐색적 분석 및 통계 분석 노트북.
   - [05_glossary_setup.ipynb](notebooks/05_glossary_setup.ipynb): 비즈니스 용어집 데이터를 Dataplex에 적재하는 노트북.
-  - [06_graph_analysis.ipynb](notebooks/06_graph_analysis.ipynb): Property Graph 및 GQL을 활용한 상품 추천 실습.
-  - [07_glossary_graph_setup.ipynb](notebooks/07_glossary_graph_setup.ipynb): 그래프 관련 비즈니스 용어집 적재 및 그래프 테이블 연동용 노트북.
-  - [08_bigquery_ai_ml_demo.ipynb](notebooks/08_bigquery_ai_ml_demo.ipynb): BigQuery 생성형 AI 및 머신러닝 분석 실습 (원격 모델, 개인화 추천 메일, 카탈로그 번역 및 태그 추출, 상품 임베딩 및 벡터 검색).
-  - [09_bigquery_ai_functions.ipynb](notebooks/09_bigquery_ai_functions.ipynb): BigQuery 고수준 AI 함수 실습 (AI.CLASSIFY, AI.SIMILARITY, AI.IF, AI.SEARCH, Distillation).
+  - [06_graph_analysis.ipynb](notebooks/06_graph_analysis.ipynb): BigQuery 속성 그래프(Property Graph) 구축, GQL(Graph Query Language) 분석 및 네이티브 시각화 실습.
+  - [07_bigquery_ai_ml_demo.ipynb](notebooks/07_bigquery_ai_ml_demo.ipynb): BigQuery 생성형 AI 및 머신러닝 분석 실습 (원격 모델, 개인화 추천 메일, 카탈로그 번역 및 태그 추출, 상품 임베딩 및 벡터 검색).
+  - [08_bigquery_ai_functions.ipynb](notebooks/08_bigquery_ai_functions.ipynb): BigQuery 고수준 AI 함수 실습 (AI.CLASSIFY, AI.SIMILARITY, AI.IF, AI.SEARCH, Distillation).
 
 - `resources/`: 용어집 정의 및 매핑 설정을 위한 리소스 파일들
   - [agent_test_queries.md](resources/agent_test_queries.md): 대화형 분석 에이전트 검증을 위한 물리 매핑 규칙 가이드 및 시나리오별 예상 SQL 레퍼런스 문서.

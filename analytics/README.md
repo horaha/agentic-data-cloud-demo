@@ -19,10 +19,9 @@ uv sync
   - [03_schema_descriptions.ipynb](notebooks/03_schema_descriptions.ipynb): Automated column descriptions via Dataplex DataScans.
   - [04_dataset_insights.ipynb](notebooks/04_dataset_insights.ipynb): Exploratory dataset insights and statistics.
   - [05_glossary_setup.ipynb](notebooks/05_glossary_setup.ipynb): Loads the relational business glossary into Dataplex.
-  - [06_graph_analysis.ipynb](notebooks/06_graph_analysis.ipynb): Property Graph and GQL recommendations.
-  - [07_glossary_graph_setup.ipynb](notebooks/07_glossary_graph_setup.ipynb): Loads the graph-specific business glossary and links graph tables.
-  - [08_bigquery_ai_ml_demo.ipynb](notebooks/08_bigquery_ai_ml_demo.ipynb): BigQuery Generative AI & ML analytics (remote LLM, embeddings, vector search).
-  - [09_bigquery_ai_functions.ipynb](notebooks/09_bigquery_ai_functions.ipynb): BigQuery high-level AI functions (AI.CLASSIFY, AI.SIMILARITY, AI.IF, AI.SEARCH, Distillation).
+  - [06_graph_analysis.ipynb](notebooks/06_graph_analysis.ipynb): Property Graph creation, GQL multi-hop relationship analysis, and native visualization.
+  - [07_bigquery_ai_ml_demo.ipynb](notebooks/07_bigquery_ai_ml_demo.ipynb): BigQuery Generative AI & ML analytics (remote LLM, embeddings, vector search).
+  - [08_bigquery_ai_functions.ipynb](notebooks/08_bigquery_ai_functions.ipynb): BigQuery high-level AI functions (AI.CLASSIFY, AI.SIMILARITY, AI.IF, AI.SEARCH, Distillation).
 
 - `resources/`: Supporting configuration and schema mapping files.
   - [agent_test_queries.md](resources/agent_test_queries.md): Verification guide and physical mapping scenarios.
