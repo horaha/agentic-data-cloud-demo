@@ -3,19 +3,20 @@ data "google_project" "project" {
   depends_on = [module.apis]
 }
 
-# BigQuery Data Transfer Service Agent 생성 보장
-resource "google_project_service_identity" "bigquery_dts_sa" {
-  provider = google-beta
-  project  = var.project_id
-  service  = "bigquerydatatransfer.googleapis.com"
+# API 활성화 후 서비스 에이전트 자동 생성을 위해 대기 처리 (30초)
+resource "time_sleep" "wait_for_service_agents" {
   depends_on = [module.apis]
+
+  create_duration = "30s"
 }
 
 # BigQuery Data Transfer service agent 권한 부여
 resource "google_project_iam_member" "bqp_dts_permissions" {
   project = var.project_id
   role    = "roles/iam.serviceAccountTokenCreator"
-  member  = "serviceAccount:${google_project_service_identity.bigquery_dts_sa.email}"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
+
+  depends_on = [time_sleep.wait_for_service_agents]
 }
 
 # 대상 데이터셋 생성
@@ -45,17 +46,11 @@ resource "google_bigquery_data_transfer_config" "thelook_copy" {
   }
 }
 
-# Dataplex Service Agent 생성 보장
-resource "google_project_service_identity" "dataplex_sa" {
-  provider = google-beta
-  project  = var.project_id
-  service  = "dataplex.googleapis.com"
-  depends_on = [module.apis]
-}
-
 # Dataplex Service Agent에 빅쿼리 데이터 편집자(BigQuery Data Editor) 권한 부여 (자동 테이블 생성을 위해 필요)
 resource "google_project_iam_member" "dataplex_bigquery_editor" {
   project = var.project_id
   role    = "roles/bigquery.dataEditor"
-  member  = "serviceAccount:${google_project_service_identity.dataplex_sa.email}"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataplex.iam.gserviceaccount.com"
+
+  depends_on = [time_sleep.wait_for_service_agents]
 }
