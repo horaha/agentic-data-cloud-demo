@@ -179,7 +179,25 @@ echo -e "\n${YELLOW}[5단계] 테라폼 리소스 생성(Terraform Apply) 시작
 echo -e "${BLUE}※주의: API 활성화 및 리소스 구성에 약 3~5분 정도 소요될 수 있습니다.${NC}"
 terraform apply -auto-approve
 
+# 4.5. 빅쿼리 데이터 복제 설정 (테라폼 자격증명 제한 우회를 위해 CLI로 실행)
+echo -e "\n${YELLOW}[4.5단계] BigQuery 데이터 복제(Data Transfer) 설정 중...${NC}"
+if ! bq ls --transfer_config --project_id="$PROJECT_ID" 2>/dev/null | grep -q "Replicate thelook_ecommerce"; then
+    echo -e "데이터 복제 전송 구성을 생성합니다..."
+    bq mk \
+      --transfer_config \
+      --project_id="$PROJECT_ID" \
+      --location="US" \
+      --data_source=cross_region_copy \
+      --target_dataset=thelook_ecommerce \
+      --display_name="Replicate thelook_ecommerce" \
+      --params='{"source_dataset_id":"thelook_ecommerce","source_project_id":"bigquery-public-data","overwrite_destination_table":"true"}'
+    echo -e "${GREEN}데이터 복제 구성 생성 완료!${NC}"
+else
+    echo -e "이미 데이터 복제 구성이 존재합니다."
+fi
+
 # 5. 구축 완료 안내 및 요약 정보 출력
+
 echo -e "\n${GREEN}======================================================================${NC}"
 echo -e "${GREEN}  인프라 구축이 완료되었습니다! 아래 생성 정보 요약을 참고하세요.   ${NC}"
 echo -e "${GREEN}======================================================================${NC}"

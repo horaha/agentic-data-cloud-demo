@@ -32,23 +32,6 @@ resource "google_bigquery_dataset" "thelook" {
   depends_on = [module.apis]
 }
 
-# 데이터 복제 구성
-resource "google_bigquery_data_transfer_config" "thelook_copy" {
-  # bqp_dts_permissions 의존성 제거
-  depends_on = [google_bigquery_dataset.thelook]
-
-  display_name           = "Replicate thelook_ecommerce"
-  location               = "US" # 데이터셋 위치와 동일하게 US 설정
-  data_source_id         = "cross_region_copy"
-  schedule               = "every 24 hours"
-  destination_dataset_id = google_bigquery_dataset.thelook.dataset_id
-
-  params = {
-    source_dataset_id           = "thelook_ecommerce"
-    source_project_id           = "bigquery-public-data"
-    overwrite_destination_table = "true"
-  }
-}
 
 # Dataplex Service Agent에 빅쿼리 데이터 편집자(BigQuery Data Editor) 권한 부여
 # Qwiklabs의 프로젝트 수준 IAM 제한을 피하기 위해 데이터셋 수준 권한(google_bigquery_dataset_iam_member)으로 변경합니다.
