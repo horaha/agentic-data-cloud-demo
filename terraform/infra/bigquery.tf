@@ -39,6 +39,7 @@ resource "google_bigquery_data_transfer_config" "thelook_copy" {
   data_source_id         = "cross_region_copy"
   schedule               = "every 24 hours"
   destination_dataset_id = google_bigquery_dataset.thelook.dataset_id
+  service_account_name   = "${data.google_project.project.project_id}@${data.google_project.project.project_id}.iam.gserviceaccount.com"
   params = {
     source_dataset_id           = "thelook_ecommerce"
     source_project_id           = "bigquery-public-data"
