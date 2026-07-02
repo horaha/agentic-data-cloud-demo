@@ -3,6 +3,8 @@ data "google_project" "project" {
   depends_on = [module.apis]
 }
 
+data "google_project" "current" {}
+
 # API 활성화 후 서비스 에이전트 전파를 위해 추가 대기 처리 (10초)
 resource "time_sleep" "wait_for_service_agents" {
   depends_on = [module.apis]
@@ -39,7 +41,9 @@ resource "google_bigquery_data_transfer_config" "thelook_copy" {
   data_source_id         = "cross_region_copy"
   schedule               = "every 24 hours"
   destination_dataset_id = google_bigquery_dataset.thelook.dataset_id
-  service_account_name   = "${data.google_project.project.project_id}@${data.google_project.project.project_id}.iam.gserviceaccount.com"
+
+  service_account_name = "${data.google_project.current.project_id}@${data.google_project.current.project_id}.iam.gserviceaccount.com"
+
   params = {
     source_dataset_id           = "thelook_ecommerce"
     source_project_id           = "bigquery-public-data"
