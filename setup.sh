@@ -153,14 +153,30 @@ if [ -z "$USER_EMAIL" ]; then
     USER_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null || true)
 fi
 
+# 지역(Region) 동적 조회 (Qwiklabs의 Resource Location 제한 정책 준수를 위해)
+DETECTED_REGION=$(gcloud config get-value compute/region 2>/dev/null || true)
+if [ -z "$DETECTED_REGION" ]; then
+    # Region이 지정되어 있지 않으면 Zone에서 추출 (예: us-east1-b -> us-east1)
+    DETECTED_ZONE=$(gcloud config get-value compute/zone 2>/dev/null || true)
+    if [ -n "$DETECTED_ZONE" ]; then
+        DETECTED_REGION=$(echo "$DETECTED_ZONE" | sed 's/-[a-z]$//')
+    fi
+fi
+
+# 감지된 지역이 없으면 기본값으로 us-central1 사용
+if [ -z "$DETECTED_REGION" ]; then
+    DETECTED_REGION="us-central1"
+fi
+
 # terraform.tfvars 생성
 cat <<EOF > "$TF_DIR/terraform.tfvars"
 project_id   = "$PROJECT_ID"
-region       = "us-central1"
+region       = "$DETECTED_REGION"
 runtime_user = "$USER_EMAIL"
 EOF
 
-echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: us-central1, User: $USER_EMAIL)"
+echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: $DETECTED_REGION, User: $USER_EMAIL)"
+
 
 # 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
 echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 계정을 활성화하는 중...${NC}"
