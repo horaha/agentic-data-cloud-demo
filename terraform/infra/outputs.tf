@@ -30,10 +30,11 @@ output "private_subnet_name" {
 
 output "private_subnet_usce1_id" {
   description = "The ID of the private subnet in us-central1"
-  value       = google_compute_subnetwork.private_subnet_usce1.id
+  value       = module.vpc.private_subnet_id
 }
 
 output "private_subnet_usce1_name" {
   description = "The name of the private subnet in us-central1"
-  value       = google_compute_subnetwork.private_subnet_usce1.name
+  value       = module.vpc.private_subnet_name
 }
+

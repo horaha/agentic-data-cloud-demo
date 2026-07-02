@@ -13,13 +13,4 @@ module "vpc" {
   depends_on = [module.apis]
 }
 
-resource "google_compute_subnetwork" "private_subnet_usce1" {
-  name                     = "adc-demo-private-subnet-usce1"
-  ip_cidr_range            = "10.0.101.0/24"
-  region                   = "us-central1"
-  network                  = module.vpc.network_id
-  project                  = var.project_id
-  private_ip_google_access = true
 
-  depends_on = [module.apis]
-}
