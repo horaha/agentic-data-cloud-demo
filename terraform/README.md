@@ -31,14 +31,14 @@ This project has been consolidated into a **centralized module management** and 
 
 This is a one-time setup step per project. Before running Terraform, you should create a GCS bucket to store the Terraform state file remotely.
 
-We recommend using the naming convention `tfstate-<your-gcp-project-id>-asne3` (e.g., `tfstate-myproject-asne3` for `asia-northeast3`).
+We recommend using the naming convention `tfstate-<your-gcp-project-id>-usce1` (e.g., `tfstate-myproject-usce1` for `us-central1`).
 
 ```bash
 # 1. Set your GCP Project ID
 gcloud config set project <your-gcp-project-id>
 
 # 2. Create the GCS bucket
-gcloud storage buckets create gs://tfstate-<your-gcp-project-id>-asne3 --location asia-northeast3 --uniform-bucket-level-access
+gcloud storage buckets create gs://tfstate-<your-gcp-project-id>-usce1 --location us-central1 --uniform-bucket-level-access
 ```
 
 > **Note**: If you want to use a different bucket name, make sure to update the `bucket` parameter in `infra/versions.tf`.

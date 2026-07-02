@@ -156,11 +156,11 @@ fi
 # terraform.tfvars 생성
 cat <<EOF > "$TF_DIR/terraform.tfvars"
 project_id   = "$PROJECT_ID"
-region       = "asia-northeast3"
+region       = "us-central1"
 runtime_user = "$USER_EMAIL"
 EOF
 
-echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: asia-northeast3, User: $USER_EMAIL)"
+echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: us-central1, User: $USER_EMAIL)"
 
 # 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
 echo -e "\n${YELLOW}[3.5단계] 주요 서비스 에이전트(Service Agent) 계정을 활성화하는 중...${NC}"

@@ -31,14 +31,14 @@
 
 이 단계는 프로젝트당 1회만 수행하면 됩니다. 테라폼을 실행하기 전에 변경 사항 상태를 안전하게 관리하기 위해 상태(State) 파일을 원격에 저장할 GCS 버킷을 생성합니다.
 
-버킷 명은 `tfstate-<사용자-GCP-프로젝트-ID>-asne3` (예: 서울 리전 `asia-northeast3` 기준 `tfstate-myproject-asne3`) 형식을 권장합니다.
+버킷 명은 `tfstate-<사용자-GCP-프로젝트-ID>-usce1` (예: `us-central1` 리전 기준 `tfstate-myproject-usce1`) 형식을 권장합니다.
 
 ```bash
 # 1. 사용할 GCP 프로젝트 ID 설정
 gcloud config set project <your-gcp-project-id>
 
 # 2. GCS 버킷 생성
-gcloud storage buckets create gs://tfstate-<your-gcp-project-id>-asne3 --location asia-northeast3 --uniform-bucket-level-access
+gcloud storage buckets create gs://tfstate-<your-gcp-project-id>-usce1 --location us-central1 --uniform-bucket-level-access
 ```
 
 > **참고**: 만약 추천 규칙 외 다른 버킷 이름을 사용하려는 경우, `infra/versions.tf` 의 `bucket` 매개변수 값도 함께 변경해야 합니다.

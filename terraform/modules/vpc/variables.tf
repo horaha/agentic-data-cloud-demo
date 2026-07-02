@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   description = "The region for the subnets"
   type        = string
-  default     = "asia-northeast3"
+  default     = "us-central1"
 }
 
 variable "network_name" {

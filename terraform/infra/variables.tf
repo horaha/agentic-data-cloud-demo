@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   description = "The default region"
   type        = string
-  default     = "asia-northeast3"
+  default     = "us-central1"
 }
 
 variable "runtime_user" {
