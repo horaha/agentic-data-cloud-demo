@@ -10,23 +10,15 @@ resource "time_sleep" "wait_for_service_agents" {
   create_duration = "10s"
 }
 
-# BigQuery Data Transfer service agent 권한 부여 (403 방지를 위해 주석 처리)
-# resource "google_project_iam_member" "bqp_dts_permissions" {
-#   project = var.project_id
-#   role    = "roles/iam.serviceAccountTokenCreator"
-#   member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
-# 
-#   depends_on = [time_sleep.wait_for_service_agents]
-# }
-
-# 임시 서비스 계정에 대해 DTS 서비스 에이전트의 Token Creator 권한 부여 (우회 리소스)
-resource "google_service_account_iam_member" "qwiklabs_sa_dts_impersonation" {
-  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.project_id}@${var.project_id}.iam.gserviceaccount.com"
-  role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
+# BigQuery Data Transfer service agent 권한 부여
+resource "google_project_iam_member" "bqp_dts_permissions" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
 
   depends_on = [time_sleep.wait_for_service_agents]
 }
+
 
 # 대상 데이터셋 생성
 resource "google_bigquery_dataset" "thelook" {
@@ -41,15 +33,13 @@ resource "google_bigquery_dataset" "thelook" {
 
 # 데이터 복제 구성
 resource "google_bigquery_data_transfer_config" "thelook_copy" {
-  depends_on = [google_service_account_iam_member.qwiklabs_sa_dts_impersonation, google_bigquery_dataset.thelook]
+  depends_on = [google_project_iam_member.bqp_dts_permissions, google_bigquery_dataset.thelook]
 
   display_name           = "Replicate thelook_ecommerce"
   location               = var.region
   data_source_id         = "cross_region_copy"
   schedule               = "every 24 hours"
   destination_dataset_id = google_bigquery_dataset.thelook.dataset_id
-
-  service_account_name = "${var.project_id}@${var.project_id}.iam.gserviceaccount.com"
 
   params = {
     source_dataset_id           = "thelook_ecommerce"
@@ -58,11 +48,11 @@ resource "google_bigquery_data_transfer_config" "thelook_copy" {
   }
 }
 
-# Dataplex Service Agent에 빅쿼리 데이터 편집자(BigQuery Data Editor) 권한 부여 (403 방지를 위해 주석 처리)
-# resource "google_project_iam_member" "dataplex_bigquery_editor" {
-#   project = var.project_id
-#   role    = "roles/bigquery.dataEditor"
-#   member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataplex.iam.gserviceaccount.com"
-# 
-#   depends_on = [time_sleep.wait_for_service_agents]
-# }
+# Dataplex Service Agent에 빅쿼리 데이터 편집자(BigQuery Data Editor) 권한 부여 (자동 테이블 생성을 위해 필요)
+resource "google_project_iam_member" "dataplex_bigquery_editor" {
+  project = var.project_id
+  role    = "roles/bigquery.dataEditor"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dataplex.iam.gserviceaccount.com"
+
+  depends_on = [time_sleep.wait_for_service_agents]
+}
