@@ -32,7 +32,7 @@ resource "google_service_account_iam_member" "qwiklabs_sa_dts_impersonation" {
 resource "google_bigquery_dataset" "thelook" {
   dataset_id                  = "thelook_ecommerce"
   friendly_name               = "TheLook eCommerce"
-  description                 = "Cloned public dataset thelook_ecommerce in Seoul"
+  description                 = "Cloned public dataset thelook_ecommerce"
   location                    = var.region
   default_table_expiration_ms = null
 
@@ -43,7 +43,7 @@ resource "google_bigquery_dataset" "thelook" {
 resource "google_bigquery_data_transfer_config" "thelook_copy" {
   depends_on = [google_service_account_iam_member.qwiklabs_sa_dts_impersonation, google_bigquery_dataset.thelook]
 
-  display_name           = "Replicate thelook_ecommerce to Seoul"
+  display_name           = "Replicate thelook_ecommerce"
   location               = var.region
   data_source_id         = "cross_region_copy"
   schedule               = "every 24 hours"
