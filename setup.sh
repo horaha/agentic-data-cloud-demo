@@ -179,22 +179,15 @@ echo -e "\n${YELLOW}[5단계] 테라폼 리소스 생성(Terraform Apply) 시작
 echo -e "${BLUE}※주의: API 활성화 및 리소스 구성에 약 3~5분 정도 소요될 수 있습니다.${NC}"
 terraform apply -auto-approve
 
-# 4.5. 빅쿼리 데이터 복제 설정 (테라폼 자격증명 제한 우회를 위해 CLI로 실행)
-echo -e "\n${YELLOW}[4.5단계] BigQuery 데이터 복제(Data Transfer) 설정 중...${NC}"
-if ! bq ls --transfer_config --project_id="$PROJECT_ID" 2>/dev/null | grep -q "Replicate thelook_ecommerce"; then
-    echo -e "데이터 복제 전송 구성을 생성합니다..."
-    bq mk \
-      --transfer_config \
-      --project_id="$PROJECT_ID" \
-      --location="US" \
-      --data_source=cross_region_copy \
-      --target_dataset=thelook_ecommerce \
-      --display_name="Replicate thelook_ecommerce" \
-      --params='{"source_dataset_id":"thelook_ecommerce","source_project_id":"bigquery-public-data","overwrite_destination_table":"true"}'
-    echo -e "${GREEN}데이터 복제 구성 생성 완료!${NC}"
-else
-    echo -e "이미 데이터 복제 구성이 존재합니다."
-fi
+# 4.5. 빅쿼리 테이블 복제 (자격증명 및 OAuth 대화형 확인 우회를 위해 직접 테이블 복사)
+echo -e "\n${YELLOW}[4.5단계] BigQuery 테이블 복제 중...${NC}"
+TABLES=("distribution_centers" "events" "inventory_items" "order_items" "orders" "products" "users")
+for table in "${TABLES[@]}"; do
+    echo -e "테이블 복사 중: ${table}..."
+    # bq cp 명령어를 통해 퍼블릭 데이터셋에서 내 프로젝트로 직접 테이블 복사 (비대화형)
+    bq cp -f "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
+done
+echo -e "${GREEN}모든 테이블 복사 완료!${NC}"
 
 # 5. 구축 완료 안내 및 요약 정보 출력
 
