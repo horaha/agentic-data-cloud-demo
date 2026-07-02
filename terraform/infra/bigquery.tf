@@ -21,7 +21,7 @@ resource "time_sleep" "wait_for_service_agents" {
 
 # 임시 서비스 계정에 대해 DTS 서비스 에이전트의 Token Creator 권한 부여 (우회 리소스)
 resource "google_service_account_iam_member" "qwiklabs_sa_dts_impersonation" {
-  service_account_id = "projects/${var.project_id}/serviceAccounts/${data.google_project.project.project_id}@${data.google_project.project.project_id}.iam.gserviceaccount.com"
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.project_id}@${var.project_id}.iam.gserviceaccount.com"
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-bigquerydatatransfer.iam.gserviceaccount.com"
 
@@ -49,7 +49,7 @@ resource "google_bigquery_data_transfer_config" "thelook_copy" {
   schedule               = "every 24 hours"
   destination_dataset_id = google_bigquery_dataset.thelook.dataset_id
 
-  service_account_name = "${data.google_project.project.project_id}@${data.google_project.project.project_id}.iam.gserviceaccount.com"
+  service_account_name = "${var.project_id}@${var.project_id}.iam.gserviceaccount.com"
 
   params = {
     source_dataset_id           = "thelook_ecommerce"
