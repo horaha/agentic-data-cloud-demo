@@ -179,13 +179,12 @@ echo -e "\n${YELLOW}[5단계] 테라폼 리소스 생성(Terraform Apply) 시작
 echo -e "${BLUE}※주의: API 활성화 및 리소스 구성에 약 3~5분 정도 소요될 수 있습니다.${NC}"
 terraform apply -auto-approve
 
-# 4.5. 빅쿼리 테이블 복제 (자격증명 및 OAuth 대화형 확인 우회를 위해 직접 테이블 복사)
+# 4.5. 빅쿼리 테이블 복제
 echo -e "\n${YELLOW}[4.5단계] BigQuery 테이블 복제 중...${NC}"
 TABLES=("distribution_centers" "events" "inventory_items" "order_items" "orders" "products" "users")
 for table in "${TABLES[@]}"; do
     echo -e "테이블 복사 중: ${table}..."
-    # bq cp 명령어를 통해 퍼블릭 데이터셋에서 내 프로젝트로 직접 테이블 복사 (비대화형)
-    bq cp -f "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
+    bq cp -f --sync=false "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
 done
 echo -e "${GREEN}모든 테이블 복사 완료!${NC}"
 
