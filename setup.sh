@@ -153,29 +153,13 @@ if [ -z "$USER_EMAIL" ]; then
     USER_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null || true)
 fi
 
-# 지역(Region) 동적 조회 (Qwiklabs의 Resource Location 제한 정책 준수를 위해)
-DETECTED_REGION=$(gcloud config get-value compute/region 2>/dev/null || true)
-if [ -z "$DETECTED_REGION" ]; then
-    # Region이 지정되어 있지 않으면 Zone에서 추출 (예: us-east1-b -> us-east1)
-    DETECTED_ZONE=$(gcloud config get-value compute/zone 2>/dev/null || true)
-    if [ -n "$DETECTED_ZONE" ]; then
-        DETECTED_REGION=$(echo "$DETECTED_ZONE" | sed 's/-[a-z]$//')
-    fi
-fi
-
-# 감지된 지역이 없으면 기본값으로 us-central1 사용
-if [ -z "$DETECTED_REGION" ]; then
-    DETECTED_REGION="us-central1"
-fi
-
 # terraform.tfvars 생성
 cat <<EOF > "$TF_DIR/terraform.tfvars"
 project_id   = "$PROJECT_ID"
-region       = "$DETECTED_REGION"
 runtime_user = "$USER_EMAIL"
 EOF
 
-echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, Region: $DETECTED_REGION, User: $USER_EMAIL)"
+echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, User: $USER_EMAIL)"
 
 
 # 3.5. GCP 서비스 에이전트(Service Agent) 생성 및 대기
@@ -201,22 +185,13 @@ TABLES=("distribution_centers" "events" "inventory_items" "order_items" "orders"
 for table in "${TABLES[@]}"; do
     echo -e "테이블 복사 중: ${table}..."
     # bq cp 명령어를 통해 퍼블릭 데이터셋에서 내 프로젝트로 직접 테이블 복사 (비대화형)
-    bq --location="$DETECTED_REGION" cp -f "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
+    bq cp -f "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
 done
 echo -e "${GREEN}모든 테이블 복사 완료!${NC}"
 
 # 5. 구축 완료 안내 및 요약 정보 출력
 
-echo -e "\n${GREEN}======================================================================${NC}"
-echo -e "${GREEN}  인프라 구축이 완료되었습니다! 아래 생성 정보 요약을 참고하세요.   ${NC}"
-echo -e "${GREEN}======================================================================${NC}"
-
-echo -e "\n${YELLOW}--- [구축된 주요 리소스 요약] ---${NC}"
-terraform output
-
-echo -e "\n${YELLOW}--- [다음 실습 단계 안내] ---${NC}"
-echo -e "1. ${BLUE}analytics/notebooks/${NC} 디렉토리로 이동합니다."
-echo -e "2. ${GREEN}01_data_profile_quality.ipynb${NC} 노트북을 실행하여 순차적으로 데모 실습을 시작합니다."
-echo -e "3. 주피터 환경 실행 전에 active python env가 설정되어 있는지 확인하세요."
-echo -e "======================================================================"
+echo -e "\n${YELLOW}======================================================================${NC}"
+echo -e "${YELLOW}  인프라 구축이 완료되었습니다!                                     ${NC}"
+echo -e "${YELLOW}======================================================================${NC}"
 cd - > /dev/null
