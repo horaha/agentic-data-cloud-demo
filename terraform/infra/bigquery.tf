@@ -30,4 +30,24 @@ resource "google_bigquery_dataset_iam_member" "dataplex_bigquery_editor" {
   depends_on = [time_sleep.wait_for_service_agents]
 }
 
+# BigQuery 원격 연결(Remote Connection) 생성 (Vertex AI 연동용)
+resource "google_bigquery_connection" "vertex_connection" {
+  connection_id = "vertex-connection"
+  project       = var.project_id
+  location      = var.region
+  friendly_name = "Vertex AI Connection"
+  description   = "Connection to Vertex AI for remote models"
+  cloud_resource {}
+
+  depends_on = [module.apis]
+}
+
+# Vertex AI 사용 권한을 BigQuery 원격 연결 서비스 계정에 부여
+resource "google_project_iam_member" "vertex_connection_aiplatform_user" {
+  project = var.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_bigquery_connection.vertex_connection.cloud_resource[0].service_account_id}"
+}
+
+
 
