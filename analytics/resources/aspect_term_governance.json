@@ -1,0 +1,49 @@
+{
+  "name": "term_governance",
+  "type": "record",
+  "annotations": {
+    "displayName": "Term Governance Ruleset",
+    "description": "Governance metadata for business glossary terms."
+  },
+  "recordFields": [
+    {
+      "name": "owner",
+      "type": "string",
+      "index": 1,
+      "annotations": {
+        "displayName": "Owner",
+        "description": "The email of the team or person responsible for this term."
+      },
+      "constraints": {
+        "required": true
+      }
+    },
+    {
+      "name": "business_formula",
+      "type": "string",
+      "index": 2,
+      "annotations": {
+        "displayName": "Business Formula",
+        "description": "Human-readable calculation logic or natural language rules."
+      }
+    },
+    {
+      "name": "update_cycle",
+      "type": "string",
+      "index": 3,
+      "annotations": {
+        "displayName": "Update Cycle",
+        "description": "The frequency at which the underlying data is updated (e.g. DAILY, HOURLY, REALTIME)."
+      }
+    },
+    {
+      "name": "sensitivity_level",
+      "type": "string",
+      "index": 4,
+      "annotations": {
+        "displayName": "Sensitivity Level",
+        "description": "The security classification of the data (e.g. PUBLIC, INTERNAL_ONLY, PII_CONFIDENTIAL)."
+      }
+    }
+  ]
+}
