@@ -42,11 +42,19 @@ resource "google_bigquery_connection" "vertex_connection" {
   depends_on = [module.apis]
 }
 
+# BigQuery 원격 연결 서비스 계정이 생성 및 전파될 때까지 30초 대기 (Race Condition 방지)
+resource "time_sleep" "wait_for_connection_sa" {
+  depends_on = [google_bigquery_connection.vertex_connection]
+
+  create_duration = "30s"
+}
+
 # Vertex AI 사용 권한을 BigQuery 원격 연결 서비스 계정에 부여
 resource "google_project_iam_member" "vertex_connection_aiplatform_user" {
-  project = var.project_id
-  role    = "roles/aiplatform.user"
-  member  = "serviceAccount:${google_bigquery_connection.vertex_connection.cloud_resource[0].service_account_id}"
+  project    = var.project_id
+  role       = "roles/aiplatform.user"
+  member     = "serviceAccount:${google_bigquery_connection.vertex_connection.cloud_resource[0].service_account_id}"
+  depends_on = [time_sleep.wait_for_connection_sa]
 }
 
 
