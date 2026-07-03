@@ -201,7 +201,7 @@ TABLES=("distribution_centers" "events" "inventory_items" "order_items" "orders"
 for table in "${TABLES[@]}"; do
     echo -e "테이블 복사 중: ${table}..."
     # bq cp 명령어를 통해 퍼블릭 데이터셋에서 내 프로젝트로 직접 테이블 복사 (비대화형)
-    bq cp -f "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
+    bq --location="$DETECTED_REGION" cp -f "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
 done
 echo -e "${GREEN}모든 테이블 복사 완료!${NC}"
 

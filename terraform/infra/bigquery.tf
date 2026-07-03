@@ -15,7 +15,7 @@ resource "google_bigquery_dataset" "thelook" {
   dataset_id                  = "thelook_ecommerce"
   friendly_name               = "TheLook eCommerce"
   description                 = "Cloned public dataset thelook_ecommerce"
-  location                    = "US"
+  location                    = var.region
   default_table_expiration_ms = null
 
   depends_on = [module.apis]
