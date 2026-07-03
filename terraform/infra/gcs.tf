@@ -28,3 +28,13 @@ resource "google_storage_bucket_object" "aspect_sql_mapping" {
 
   depends_on = [module.resource_bucket]
 }
+
+# 거버넌스 Aspect 스키마 JSON 파일 업로드
+resource "google_storage_bucket_object" "aspect_term_governance" {
+  name   = "resources/aspect_term_governance.json"
+  source = "../../analytics/resources/aspect_term_governance.json"
+  bucket = "metadata-resources-${var.project_id}"
+
+  depends_on = [module.resource_bucket]
+}
+
