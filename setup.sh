@@ -34,6 +34,14 @@ fi
 
 echo -e "감지된 GCP 프로젝트 ID: ${GREEN}$PROJECT_ID${NC}"
 
+# 1.5. Application Default Credentials (ADC) 활성화 여부 확인 및 로그인 유도
+echo -e "\n${YELLOW}[1.5단계] Application Default Credentials (ADC) 상태 확인 중...${NC}"
+if ! gcloud auth application-default print-access-token &>/dev/null; then
+    echo -e "${YELLOW}[안내] ADC(Application Default Credentials)가 없거나 만료되었습니다.${NC}"
+    echo -e "인프라 구축 및 Colab 연동을 위해 인증을 진행합니다. 브라우저 창 또는 안내되는 링크를 통해 로그인해 주세요."
+    gcloud auth application-default login
+fi
+echo -e "ADC 상태 확인 완료: ${GREEN}OK${NC}"
 # Cloud Resource Manager API 사전 활성화 (테라폼 API 관리를 위해 선행 활성화 필수)
 echo -e "\n${YELLOW}GCP API 제어를 위해 Cloud Resource Manager API를 사전 활성화합니다...${NC}"
 gcloud services enable cloudresourcemanager.googleapis.com --project="$PROJECT_ID"
