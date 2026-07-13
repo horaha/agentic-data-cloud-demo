@@ -189,8 +189,15 @@ terraform init
 echo -e "\n${YELLOW}[5단계] 테라폼 리소스 생성(Terraform Apply) 시작...${NC}"
 echo -e "${BLUE}※주의: API 활성화 및 리소스 구성에 약 3~5분 정도 소요될 수 있습니다.${NC}"
 
-# 머신 타입 후보군 정의 (리소스 부족 시 순차 적용)
-CANDIDATE_MACHINE_TYPES=("n1-standard-2" "n2-standard-2" "n1-standard-4" "n2-standard-4")
+# 머신 타입 후보군 정의 (리소스 부족 또는 미지원 시 순차 적용)
+CANDIDATE_MACHINE_TYPES=(
+  "e2-medium"
+  "e2-small"
+  "e2-standard-2"
+  "n2d-standard-2"
+  "n1-standard-2"
+  "n2-standard-2"
+)
 success=false
 
 for machine_type in "${CANDIDATE_MACHINE_TYPES[@]}"; do
@@ -209,14 +216,18 @@ for machine_type in "${CANDIDATE_MACHINE_TYPES[@]}"; do
         echo "colab_machine_type = \"${machine_type}\"" >> terraform.tfvars
         break
     else
-        # 에러 로그 분석 (리소스 부족 관련 키워드가 있는지 확인)
+        # 에러 로그 분석 (리소스 부족 또는 지원하지 않는 머신 타입인지 확인)
         if grep -qi "does not have enough resources" tf_apply.log || \
            grep -qi "resource availability" tf_apply.log || \
            grep -qi "limit" tf_apply.log || \
-           grep -qi "code 8" tf_apply.log; then
-            echo -e "${YELLOW}[경고] 머신 타입 [${machine_type}] 확보 실패 (리소스 부족). 다음 후보로 재시도합니다...${NC}"
+           grep -qi "code 8" tf_apply.log || \
+           grep -qi "not supported" tf_apply.log || \
+           grep -qi "invalid" tf_apply.log || \
+           grep -qi "is not a valid" tf_apply.log || \
+           grep -qi "code 3" tf_apply.log; then
+            echo -e "${YELLOW}[경고] 머신 타입 [${machine_type}] 사용 불가 (리소스 부족 또는 미지원). 다음 후보로 재시도합니다...${NC}"
         else
-            echo -e "${RED}[ERROR] 리소스 부족 외의 다른 문제로 테라폼 실행이 실패했습니다.${NC}"
+            echo -e "${RED}[ERROR] 리소스 부족/미지원 외의 다른 문제로 테라폼 실행이 실패했습니다.${NC}"
             rm -f tf_apply.log
             exit $TF_EXIT_CODE
         fi
