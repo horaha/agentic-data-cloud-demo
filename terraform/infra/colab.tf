@@ -2,6 +2,9 @@
 
 resource "random_id" "colab_suffix" {
   byte_length = 4
+  keepers = {
+    machine_type = var.colab_machine_type
+  }
 }
 
 # Colab Enterprise 런타임 템플릿 생성
