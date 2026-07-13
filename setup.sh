@@ -183,31 +183,6 @@ echo -e "\n${YELLOW}[4단계] 테라폼 초기화(Terraform Init) 실행 중...$
 cd "$TF_DIR"
 terraform init
 
-# 4.2. 기존 리소스 존재 시 Import 처리 (State 유실 대응)
-echo -e "\n${YELLOW}[4.2단계] 기존 Colab 리소스 존재 여부 확인 및 테라폼 Import...${NC}"
-
-# 1) terraform.tfvars에서 region 추출 시도
-REGION=$(grep '^region[[:space:]]*=' terraform.tfvars 2>/dev/null | sed -E 's/.*=[[:space:]]*"([^"]+)".*/\1/')
-
-# 2) 없으면 variables.tf에서 default region 추출
-if [ -z "$REGION" ]; then
-    REGION=$(grep -A 3 'variable "region"' variables.tf 2>/dev/null | grep 'default[[:space:]]*=' | sed -E 's/.*default[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/')
-fi
-
-# 3) 그래도 없으면 기본값인 us-central1 적용
-if [ -z "$REGION" ]; then
-    REGION="us-central1"
-fi
-
-TEMPLATE_ID="adc-demo-template-usce1"
-RUNTIME_ID="adc-demo-runtime-usce1"
-
-echo -e "기존 NotebookRuntimeTemplate ($TEMPLATE_ID) Import 시도 (Region: $REGION)..."
-# 에러가 발생해도 계속 진행하기 위해 || true 처리 (로그는 출력되도록 설정)
-terraform import -var="colab_machine_type=n2-standard-2" google_colab_runtime_template.colab_template_usce1 "projects/${PROJECT_ID}/locations/${REGION}/notebookRuntimeTemplates/${TEMPLATE_ID}" || true
-
-echo -e "기존 Colab Runtime ($RUNTIME_ID) Import 시도 (Region: $REGION)..."
-terraform import -var="colab_machine_type=n2-standard-2" google_colab_runtime.colab_runtime "projects/${PROJECT_ID}/locations/${REGION}/notebookRuntimes/${RUNTIME_ID}" || true
 
 
 

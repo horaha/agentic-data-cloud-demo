@@ -1,8 +1,12 @@
 # 6. Colab Enterprise 환경 구성
 
+resource "random_id" "colab_suffix" {
+  byte_length = 4
+}
+
 # Colab Enterprise 런타임 템플릿 생성
 resource "google_colab_runtime_template" "colab_template_usce1" {
-  name         = "adc-demo-template-usce1"
+  name         = "adc-demo-template-${random_id.colab_suffix.hex}"
   display_name = "Colab Runtime Template (us-central1)"
   location     = var.region
   description  = "Colab Enterprise Runtime Template in us-central1"
@@ -26,7 +30,7 @@ resource "google_colab_runtime_template" "colab_template_usce1" {
 
 # 템플릿 기반으로 실습용 런타임(VM) 사전 생성
 resource "google_colab_runtime" "colab_runtime" {
-  name         = "adc-demo-runtime-usce1"
+  name         = "adc-demo-runtime-${random_id.colab_suffix.hex}"
   display_name = "ADC Demo Runtime"
   location     = var.region
   
@@ -39,3 +43,4 @@ resource "google_colab_runtime" "colab_runtime" {
 
   depends_on = [google_colab_runtime_template.colab_template_usce1]
 }
+
