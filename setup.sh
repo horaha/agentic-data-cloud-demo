@@ -185,7 +185,47 @@ terraform init
 
 echo -e "\n${YELLOW}[5단계] 테라폼 리소스 생성(Terraform Apply) 시작...${NC}"
 echo -e "${BLUE}※주의: API 활성화 및 리소스 구성에 약 3~5분 정도 소요될 수 있습니다.${NC}"
-terraform apply -auto-approve
+
+# 머신 타입 후보군 정의 (리소스 부족 시 순차 적용)
+CANDIDATE_MACHINE_TYPES=("n1-standard-2" "n2-standard-2" "n1-standard-4" "n2-standard-4")
+success=false
+
+for machine_type in "${CANDIDATE_MACHINE_TYPES[@]}"; do
+    echo -e "\n${BLUE}>> 머신 타입 [${machine_type}]으로 배포 시도 중...${NC}"
+    
+    # set -e가 켜져있으므로 파이프라인 오류 시 스크립트가 죽는 것을 방지하기 위해 일시적으로 해제
+    set +e
+    terraform apply -var="colab_machine_type=${machine_type}" -auto-approve 2>&1 | tee tf_apply.log
+    TF_EXIT_CODE=${PIPESTATUS[0]}
+    set -e
+
+    if [ $TF_EXIT_CODE -eq 0 ]; then
+        success=true
+        echo -e "${GREEN}>> 머신 타입 [${machine_type}]으로 배포 성공!${NC}"
+        # 성공한 머신 타입을 tfvars 파일에 영구 기록
+        echo "colab_machine_type = \"${machine_type}\"" >> terraform.tfvars
+        break
+    else
+        # 에러 로그 분석 (리소스 부족 관련 키워드가 있는지 확인)
+        if grep -qi "does not have enough resources" tf_apply.log || \
+           grep -qi "resource availability" tf_apply.log || \
+           grep -qi "limit" tf_apply.log || \
+           grep -qi "code 8" tf_apply.log; then
+            echo -e "${YELLOW}[경고] 머신 타입 [${machine_type}] 확보 실패 (리소스 부족). 다음 후보로 재시도합니다...${NC}"
+        else
+            echo -e "${RED}[ERROR] 리소스 부족 외의 다른 문제로 테라폼 실행이 실패했습니다.${NC}"
+            rm -f tf_apply.log
+            exit $TF_EXIT_CODE
+        fi
+    fi
+done
+
+rm -f tf_apply.log
+
+if [ "$success" = false ]; then
+    echo -e "${RED}[ERROR] 사용 가능한 모든 머신 타입 후보에 대해 리소스가 부족하여 인프라 생성에 실패했습니다.${NC}"
+    exit 1
+fi
 
 # 4.5. 빅쿼리 테이블 복제
 echo -e "\n${YELLOW}[4.5단계] BigQuery 테이블 복제 중...${NC}"

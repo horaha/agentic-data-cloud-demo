@@ -14,3 +14,10 @@ variable "runtime_user" {
   type        = string
   default     = ""
 }
+
+variable "colab_machine_type" {
+  description = "The machine type for Colab Enterprise runtime"
+  type        = string
+  default     = "n2-standard-2"
+}
+

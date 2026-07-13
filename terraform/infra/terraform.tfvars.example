@@ -1,3 +1,5 @@
 # Copy this file to terraform.tfvars and replace the placeholders with your actual GCP values.
-project_id = "your-gcp-project-id"
-region     = "us-central1"
+project_id         = "your-gcp-project-id"
+region             = "us-central1"
+colab_machine_type = "n2-standard-2"
+

@@ -8,7 +8,7 @@ resource "google_colab_runtime_template" "colab_template_usce1" {
   description  = "Colab Enterprise Runtime Template in us-central1"
 
   machine_spec {
-    machine_type = "n2-standard-2"
+    machine_type = var.colab_machine_type
   }
 
   network_spec {
