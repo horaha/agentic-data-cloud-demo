@@ -183,6 +183,24 @@ echo -e "\n${YELLOW}[4단계] 테라폼 초기화(Terraform Init) 실행 중...$
 cd "$TF_DIR"
 terraform init
 
+# 4.2. 기존 리소스 존재 시 Import 처리 (State 유실 대응)
+echo -e "\n${YELLOW}[4.2단계] 기존 Colab 리소스 존재 여부 확인 및 테라폼 Import...${NC}"
+REGION=$(grep -A 3 'variable "region"' variables.tf | grep 'default[[:space:]]*=' | sed -E 's/.*default[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/')
+if [ -z "$REGION" ]; then
+    REGION="us-central1"
+fi
+
+TEMPLATE_ID="adc-demo-template-usce1"
+RUNTIME_ID="adc-demo-runtime-usce1"
+
+echo -e "기존 NotebookRuntimeTemplate ($TEMPLATE_ID) Import 시도..."
+# 기존에 존재하지 않으면 에러가 나므로 실시간 출력을 버리고 || true 처리
+terraform import google_colab_runtime_template.colab_template_usce1 "projects/${PROJECT_ID}/locations/${REGION}/notebookRuntimeTemplates/${TEMPLATE_ID}" &>/dev/null || true
+
+echo -e "기존 Colab Runtime ($RUNTIME_ID) Import 시도..."
+terraform import google_colab_runtime.colab_runtime "projects/${PROJECT_ID}/locations/${REGION}/notebookRuntimes/${RUNTIME_ID}" &>/dev/null || true
+
+
 echo -e "\n${YELLOW}[5단계] 테라폼 리소스 생성(Terraform Apply) 시작...${NC}"
 echo -e "${BLUE}※주의: API 활성화 및 리소스 구성에 약 3~5분 정도 소요될 수 있습니다.${NC}"
 
