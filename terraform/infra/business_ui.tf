@@ -24,7 +24,7 @@ resource "google_cloud_run_v2_service" "ui_service" {
 
   template {
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.ui_repository_name}/${var.ui_service_name}:${var.ui_image_tag}"
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
 
       ports {
         container_port = 8080
