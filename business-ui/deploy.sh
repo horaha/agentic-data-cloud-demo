@@ -108,6 +108,17 @@ fi
 terraform apply -target=module.apis -target=google_project_iam_member.compute_roles -target=google_artifact_registry_repository.ui_repo -target=google_cloud_run_v2_service.ui_service -target=google_cloud_run_v2_service_iam_member.allow_unauthenticated -auto-approve
 gcloud run deploy dataplex-business-ui --image="$REPO_URL:latest" --region="$PREV_REGION" --project="$PROJECT_ID" --quiet
 
+echo "=== Step 4: Configuring IAM Invoker Access for Cloud Run ==="
+if gcloud run services add-iam-policy-binding dataplex-business-ui --region="$PREV_REGION" --member="allUsers" --role="roles/run.invoker" --project="$PROJECT_ID" &>/dev/null; then
+    echo "[안내] Cloud Run 서비스가 외부 전체 공개(allUsers)로 설정되었습니다."
+else
+    echo "[안내] 조직 정책(Domain Restricted Sharing)으로 인해 allUsers 설정이 차단되어 활성 계정 권한으로 바인딩합니다..."
+    gcloud run services add-iam-policy-binding dataplex-business-ui --region="$PREV_REGION" --member="user:$USER_EMAIL" --role="roles/run.invoker" --project="$PROJECT_ID" &>/dev/null || true
+    if [[ "$USER_EMAIL" == *"@qwiklabs.net"* ]]; then
+        gcloud run services add-iam-policy-binding dataplex-business-ui --region="$PREV_REGION" --member="domain:qwiklabs.net" --role="roles/run.invoker" --project="$PROJECT_ID" &>/dev/null || true
+    fi
+fi
+
 # Get the final Cloud Run service URL
 SERVICE_URL=$(gcloud run services describe dataplex-business-ui --region="$PREV_REGION" --project="$PROJECT_ID" --format="value(status.url)" 2>/dev/null || terraform output -raw ui_service_url)
 

@@ -50,29 +50,7 @@ gcloud config get-value project
 ### 3단계: 비즈니스 UI(웹 인터페이스) Cloud Run 자동 배포 (선택 사항)
 **Business UI (선택 사항)**는 비즈니스 도메인 사용자용 자산 검색 및 메타데이터 탐색 화면을 제공하며, 필요 시 Cloud Run 환경에 원클릭으로 자동 배포할 수 있습니다.
 
-#### 1. Google OAuth Client ID 생성 및 설정 (필수 1회)
-1. [GCP Console Credentials](https://console.cloud.google.com/apis/credentials) ➔ **+ 사용자 인증 정보 만들기 ➔ OAuth 클라이언트 ID** (웹 애플리케이션 유형)를 선택합니다.
-2. **승인된 JavaScript 원본**: `http://localhost:8080`
-3. **승인된 리디렉션 URI**: `http://localhost:8080/auth/google/callback`
-4. 발급받은 Client ID를 `terraform/infra/terraform.tfvars` 파일에 작성합니다:
-   ```hcl
-   oauth_client_id = "YOUR_OAUTH_CLIENT_ID.apps.googleusercontent.com"
-   ```
-
-#### 2. Cloud Run 원클릭 자동 배포
-```shell
-cd business-ui
-./deploy.sh
-```
-*(자세한 배포 동작 원리는 [UI 한글 배포 가이드](business-ui/README.deploy_ko.md)를 참고하세요.)*
-
-#### 3. 접속 및 구글 로그인 권한 동의
-* **프록시 접속 (조직 보안 정책 적용 시):** GCP 조직 정책(Domain Restricted Sharing)으로 인해 Cloud Run URL 직접 접속 시 `403 Forbidden`이 발생하는 경우, 터미널에서 아래 프록시 명령어로 접속합니다:
-  ```shell
-  gcloud run services proxy dataplex-business-ui --region=asia-northeast3 --project=YOUR_PROJECT_ID --port=8080
-  ```
-  (실행 후 `http://localhost:8080` 또는 Cloud Shell Web Preview 8080 포트로 접속)
-* **구글 로그인 권한 동의:** 로그인 팝업창이 나타날 때 **"모두 선택(Select all)"** 또는 `Google Cloud Platform`, `BigQuery`, `Dataplex` 체크박스를 모두 **체크(v)** 하신 후 [계속]을 클릭하셔야 메타데이터 탐색 권한이 정상 부여됩니다.
+* 자세한 사전 설정(Google OAuth Client ID 생성), 배포 스크립트 실행 및 접속 가이드는 [UI 한글 배포 가이드](business-ui/README.deploy_ko.md)를 참고하세요.
 
 ## 라이선스
 이 프로젝트는 Apache 2.0 라이선스를 따릅니다.

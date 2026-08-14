@@ -54,7 +54,7 @@ const LoginV2: React.FC = () => {
     },
     onError: () => console.error('Google Login Failed'),
     flow: 'implicit',
-    scope: 'https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery https://www.googleapis.com/auth/dataplex.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/gmail.send',
+    scope: 'https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery https://www.googleapis.com/auth/dataplex.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
   });
 
   return (

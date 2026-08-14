@@ -81,12 +81,8 @@ cd business-ui
 ```
 
 ### 접속 및 구글 로그인 권한 안내
-1. **프록시 접속 (조직 보안 정책 적용 시)**:
-   GCP 조직 정책(Domain Restricted Sharing)으로 인해 Cloud Run URL 직접 접속 시 `403 Forbidden`이 발생하는 경우, 터미널에서 아래 프록시 명령어로 접속합니다:
-   ```bash
-   gcloud run services proxy dataplex-business-ui --region=asia-northeast3 --project=YOUR_PROJECT_ID --port=8080
-   ```
-   (접속 주소: `http://localhost:8080` 또는 Cloud Shell Web Preview 8080 포트)
+1. **서비스 직접 접속**:
+   `deploy.sh` 실행 시 IAM 호출 권한(`allUsers` 또는 활성 계정 권한)이 자동 설정되므로, 터미널에 출력된 **Service URL** (예: `https://dataplex-business-ui-xxxx.run.app`)로 웹 브라우저에서 직접 접속합니다. (별도의 프록시 연결이 필요하지 않습니다.)
 
 2. **구글 로그인 권한 동의**:
    로그인 팝업창이 나타날 때 **"모두 선택(Select all)"** 또는 `Google Cloud Platform`, `BigQuery`, `Dataplex` 체크박스를 모두 **체크(v)** 하신 후 [계속]을 클릭하셔야 메타데이터 탐색 권한이 정상 부여됩니다.

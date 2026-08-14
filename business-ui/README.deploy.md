@@ -20,8 +20,11 @@ This guide details how to build and deploy the **Knowledge Catalog Business Inte
   ```
 - Make sure Billing is enabled on your GCP project.
 
-### 2. Configure Variables (Optional)
-The deployment script automatically detects your active GCP project (`PROJECT_ID`) and account email. To add your Google OAuth Client ID, update `terraform.tfvars`:
+### 2. Create Google OAuth Client ID & Configure Variables (`terraform.tfvars`)
+1. Go to [GCP Console Credentials](https://console.cloud.google.com/apis/credentials) ➔ **+ CREATE CREDENTIALS ➔ OAuth client ID** (Web application) to create your client ID.
+   - **Authorized JavaScript origins**: `http://localhost:8080`
+   - **Authorized redirect URIs**: `http://localhost:8080/auth/google/callback`
+2. Copy the generated Client ID and update `../terraform/infra/terraform.tfvars`:
 ```shell
 nano ../terraform/infra/terraform.tfvars
 ```
@@ -49,20 +52,16 @@ The script will automatically:
 
 ### 4. Post-Deployment: Configure OAuth & Access Application
 
-#### A. Configure Google OAuth JavaScript Origins
-Add your Service URL (or local proxy URL `http://localhost:8080`) to your Google Cloud Console Credentials page:
-1. Go to **APIs & Services > Credentials > Web Client**.
-2. In **Authorized JavaScript origins**, add: `http://localhost:8080` (or the printed Cloud Run URL e.g. `https://dataplex-business-ui-xxxx.run.app`)
-3. In **Authorized redirect URIs**, add: `http://localhost:8080/auth/google/callback` (or the printed URL e.g. `https://dataplex-business-ui-xxxx.run.app/auth/google/callback`)
-4. Click **Save**.
+#### A. Add Cloud Run URL to Google OAuth Authorized Origins
+Add your live Service URL to the Google OAuth Client ID created in Step 2:
+1. Go to **APIs & Services > Credentials** in GCP Console.
+2. Click the Web Client created in Step 2.
+3. In **Authorized JavaScript origins**, add the printed Cloud Run URL (e.g. `https://dataplex-business-ui-xxxx.run.app`).
+4. In **Authorized redirect URIs**, add the printed redirect URL (e.g. `https://dataplex-business-ui-xxxx.run.app/auth/google/callback`).
+5. Click **Save**.
 
 #### B. Accessing the Application
-- **Direct Access**: Open the Cloud Run URL if public unauthenticated access (`allUsers`) is permitted in your organization.
-- **Proxy Access (If GCP Organization Policy Enforced)**: If Domain Restricted Sharing blocks `allUsers` access, run the local proxy:
-  ```shell
-  gcloud run services proxy dataplex-business-ui --region=asia-northeast3 --project=YOUR_PROJECT_ID --port=8080
-  ```
-  Open `http://localhost:8080` (or Cloud Shell Web Preview on port 8080).
+- **Direct Access**: Since `deploy.sh` automatically configures IAM invoker access (`allUsers` or active account/domain access), open the printed **Service URL** (e.g., `https://dataplex-business-ui-xxxx.run.app`) directly in your web browser. No proxy command is required.
 
 #### C. Google OAuth Sign-in Consent
 When signing in with Google, ensure you select **"Select all"** or check all requested permission boxes (`Google Cloud Platform`, `BigQuery`, `Dataplex`) on the Google consent screen to ensure full access to metadata and analytics.

@@ -50,29 +50,7 @@ Once the infrastructure is up, you can run the interactive analysis notebooks.
 ### Step 3: Deploy the Business UI to Cloud Run (Optional)
 The **Business UI (Optional)** provides business users with a graphical search and metadata discovery portal. You can deploy it to Google Cloud Run in a single step when needed.
 
-#### 1. Create & Configure Google OAuth Client ID (Required Once)
-1. Go to [GCP Console Credentials](https://console.cloud.google.com/apis/credentials) ➔ **+ CREATE CREDENTIALS ➔ OAuth client ID** (Web application).
-2. **Authorized JavaScript origins**: `http://localhost:8080`
-3. **Authorized redirect URIs**: `http://localhost:8080/auth/google/callback`
-4. Copy the generated Client ID and add it to `terraform/infra/terraform.tfvars`:
-   ```hcl
-   oauth_client_id = "YOUR_OAUTH_CLIENT_ID.apps.googleusercontent.com"
-   ```
-
-#### 2. Run Automated Deployment
-```shell
-cd business-ui
-./deploy.sh
-```
-*(For detailed deployment mechanics, check the [UI Deployment Guide](business-ui/README.deploy.md).)*
-
-#### 3. Access & OAuth Permission Consent
-* **Proxy Access (If Organization Policy Enforced):** If GCP Organization Policy (Domain Restricted Sharing) causes `403 Forbidden` on direct Cloud Run URLs, start a local proxy:
-  ```shell
-  gcloud run services proxy dataplex-business-ui --region=asia-northeast3 --project=YOUR_PROJECT_ID --port=8080
-  ```
-  (Access via `http://localhost:8080` or Cloud Shell Web Preview on port 8080).
-* **OAuth Permission Consent:** When logging in via Google OAuth, ensure you select **"Select all"** or check all permission boxes (`Google Cloud Platform`, `BigQuery`, `Dataplex`) on the Google consent screen.
+* For detailed prerequisite configuration (Google OAuth Client ID), deployment script execution, and access guidelines, please refer to the [UI Deployment Guide](business-ui/README.deploy.md).
 
 ## License
 This project is licensed under the Apache 2.0 License - see the LICENSE details.
