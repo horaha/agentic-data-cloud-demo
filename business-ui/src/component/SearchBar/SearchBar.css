@@ -1,0 +1,310 @@
+.MuiAutocomplete-paper {
+    border-radius: 24px !important;
+    box-shadow: 0 4px 6px rgba(32,33,36,.28) !important;
+    border: none !important;
+    padding: 6px 0px 8px !important;
+    background-color: #ffffff !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: calc(100% + 12px) !important;
+    z-index: 2000 !important;
+    transform: none !important;
+}
+
+.MuiAutocomplete-paper.navbar-dropdown {
+    position: relative !important;
+    top: auto !important;
+    margin-top: 0px !important;
+}
+
+#search-bar.navbar-variant .MuiAutocomplete-popper {
+    top: calc(100% + 4px) !important;
+}
+
+.MuiAutocomplete-listbox {
+    padding: 0px !important;
+    max-height: 35vh !important;
+    overflow-y: auto !important;
+}
+
+.MuiAutocomplete-listbox li {
+    padding: 8px 11px !important;
+    gap: 11px !important;
+    font-family: 'Google Sans Text', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 1.4285714285714286em !important;
+    color: #1F1F1F !important;
+    display: flex !important;
+    align-items: center !important;
+    cursor: pointer !important;
+}
+
+/* Remove persistent MUI focus highlight — only show on hover */
+.MuiAutocomplete-listbox .MuiAutocomplete-option.Mui-focused:not(:hover) {
+    background-color: transparent !important;
+}
+
+/* Keyboard navigation highlight via data-nav attribute */
+.MuiAutocomplete-listbox[data-nav="keyboard"] .MuiAutocomplete-option.Mui-focused {
+    background-color: #E8EAED !important;
+}
+
+.recent-search-item {
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 8px 11px !important;
+    gap: 11px !important;
+    width: 100% !important;
+    font-family: 'Google Sans Text', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 1.4285714285714286em !important;
+    color: #1F1F1F !important;
+}
+
+.recent-search-item .recent-search-delete {
+    visibility: hidden;
+}
+
+.recent-search-item:hover .recent-search-delete {
+    visibility: visible;
+}
+
+#search-bar .MuiOutlinedInput-root {
+    padding: 0rem 0.5625rem 0rem 0rem !important;
+    border: none !important;
+}
+
+/* Navbar variant specific padding */
+#search-bar.navbar-variant .MuiOutlinedInput-root {
+    padding: 0rem 0.5625rem 0rem 0rem !important;
+}
+
+#search-bar .MuiOutlinedInput-root fieldset {
+    border: none !important;
+}
+
+#search-bar .MuiOutlinedInput-root:hover fieldset {
+    border: none !important;
+}
+
+#search-bar .MuiOutlinedInput-root.Mui-focused fieldset {
+    border: none !important;
+}
+
+#seach-select-span > div {
+    border: none !important;
+    width: 8.75rem;
+    text-align: space-between;
+}
+
+#seach-select-span > div fieldset {
+    border: none !important;
+}
+
+#seach-select-span > div:hover fieldset {
+    border: none !important;
+}
+
+#seach-select-span > div.Mui-focused fieldset {
+    border: none !important;
+}
+
+#search-default-type{
+    padding: 0.8rem 0rem !important;
+}
+
+/* Ensure check icon only appears in dropdown, not in main display */
+#search-default-type .MuiSelect-select {
+    display: flex !important;
+    align-items: center !important;
+}
+
+#search-default-type .MuiSelect-select .MuiSvgIcon-root {
+    display: none !important;
+}
+
+/* Disable MUI Popper positioning interference */
+/* Extend 1px beyond each side to align with search bar's outer border edge */
+#search-bar .MuiAutocomplete-popper {
+    position: absolute !important;
+    top: calc(100% + 12px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Search bar styling when dropdown is open */
+#search-bar {
+    transition: none !important;
+    box-sizing: border-box !important;
+    width: auto !important;
+}
+
+#search-bar.navbar-variant {
+    max-width: clamp(280px, 47vw, 680px) !important;
+    height: clamp(36px, 3.3vw, 48px) !important;
+}
+
+#search-bar.navbar-variant.dropdown-open {
+    background: #ffffff !important;
+    border-radius: 170px 0px 0px 170px !important;
+    box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.12), 0px 2px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 5px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Create a pseudo-element to cover the select menu area with original background (navbar only) */
+#search-bar.navbar-variant.dropdown-open::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: calc(9.375rem + 2px); /* Width of the select menu + padding for gaps */
+    height: calc(100% + 2px);
+    background: #ffffff;
+    border-top-right-radius: 3.125rem;
+    border-bottom-right-radius: 3.125rem;
+    border-left: 0.0625rem solid #C5C7C5;
+    z-index: 1;
+    pointer-events: none;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23575757" d="M8 6.586L3.707 2.293a1 1 0 00-1.414 1.414L6.586 8l-4.293 4.293a1 1 0 001.414 1.414L8 9.414l4.293 4.293a1 1 0 001.414-1.414L9.414 8l4.293-4.293a1 1 0 00-1.414-1.414L8 6.586z"/></svg>') no-repeat center;
+    cursor: pointer;
+}
+
+.animated-placeholder {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1F1F1F;
+    opacity: 0.5;
+    pointer-events: none;
+    font-family: 'Product Sans', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    z-index: 1;
+    white-space: nowrap;
+    animation: placeholderSlideIn 0.4s cubic-bezier(0.2, 0.0, 0.2, 1) forwards;
+}
+
+@keyframes placeholderSlideIn {
+    0% {
+        opacity: 0;
+        transform: translate(0, -30%);
+    }
+    100% {
+        opacity: 0.5;
+        transform: translate(0, -50%);
+    }
+}
+
+@media (max-width: 768px) {
+    .MuiAutocomplete-paper.autocomplete-dropdown {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        max-width: 100% !important;
+        border-radius: 20px !important;
+        box-sizing: border-box !important;
+    }
+
+    #search-bar.navbar-variant {
+        width: 95% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        height: 2.75rem !important;
+    }
+
+    #search-bar:not(.navbar-variant) {
+        height: 2.75rem !important;
+    }
+
+    #search-bar {
+        padding: 0 0.5rem !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #search-bar:not(.navbar-variant) {
+        padding: 0 0.5rem 0 0.75rem !important;
+    }
+
+    #search-bar .MuiAutocomplete-popper {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        top: calc(100% + 8px) !important;
+    }
+}
+
+/* ==========================================================================
+   Dark Mode Overrides
+   ========================================================================== */
+
+html[data-theme="dark"] .MuiAutocomplete-paper {
+    background-color: #282a2c !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-theme="dark"] .MuiAutocomplete-listbox li {
+    color: #e3e3e3 !important;
+}
+
+html[data-theme="dark"] .MuiAutocomplete-listbox .MuiAutocomplete-option.Mui-focused:not(:hover) {
+    background-color: transparent !important;
+}
+
+html[data-theme="dark"] .MuiAutocomplete-listbox[data-nav="keyboard"] .MuiAutocomplete-option.Mui-focused {
+    background-color: #3c4043 !important;
+}
+
+html[data-theme="dark"] .recent-search-item {
+    color: #e3e3e3 !important;
+}
+
+html[data-theme="dark"] #search-bar.navbar-variant.dropdown-open {
+    background: #282a2c !important;
+}
+
+html[data-theme="dark"] #search-bar.navbar-variant.dropdown-open::after {
+    background: #282a2c;
+    border-left-color: #3c4043;
+}
+
+html[data-theme="dark"] .animated-placeholder {
+    color: #7c7f82;
+}
+
+html[data-theme="dark"] input[type="search"]::-webkit-search-cancel-button {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%239aa0a6" d="M8 6.586L3.707 2.293a1 1 0 00-1.414 1.414L6.586 8l-4.293 4.293a1 1 0 001.414 1.414L8 9.414l4.293 4.293a1 1 0 001.414-1.414L9.414 8l4.293-4.293a1 1 0 00-1.414-1.414L8 6.586z"/></svg>') no-repeat center;
+}
+
+@media (max-width: 480px) {
+    #search-bar:not(.navbar-variant) {
+        height: 2.5rem !important;
+    }
+
+    #search-bar input {
+        font-size: 0.8rem !important;
+    }
+
+    .animated-placeholder {
+        font-size: 12px !important;
+    }
+}

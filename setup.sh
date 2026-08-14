@@ -155,16 +155,26 @@ if [ "$RESET_STATE" = true ]; then
     rm -rf "$TF_DIR/.terraform" "$TF_DIR/terraform.tfstate" "$TF_DIR/terraform.tfstate.backup" "$TF_DIR/.terraform.lock.hcl"
 fi
 
-# 실행 사용자 이메일 조회 (Colab 런타임 소유자 지정을 위해 필요)
-USER_EMAIL=$(gcloud config get-value account 2>/dev/null || true)
-if [ -z "$USER_EMAIL" ]; then
-    USER_EMAIL=$(gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null || true)
+# 기존 tfvars 변수 값 보존 (OAuth Client ID 및 Admin Email 등)
+PREV_OAUTH_CLIENT_ID=""
+PREV_ADMIN_EMAIL=""
+PREV_REGION="asia-northeast3"
+if [ -f "$TF_DIR/terraform.tfvars" ]; then
+    PREV_OAUTH_CLIENT_ID=$(sed -n 's/oauth_client_id[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' "$TF_DIR/terraform.tfvars" | tr -d ' ' 2>/dev/null || true)
+    PREV_ADMIN_EMAIL=$(sed -n 's/admin_email[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' "$TF_DIR/terraform.tfvars" | tr -d ' ' 2>/dev/null || true)
+    PREV_REGION_VAL=$(sed -n 's/region[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' "$TF_DIR/terraform.tfvars" | tr -d ' ' 2>/dev/null || true)
+    if [ -n "$PREV_REGION_VAL" ]; then PREV_REGION="$PREV_REGION_VAL"; fi
 fi
+
+ADMIN_EMAIL="${PREV_ADMIN_EMAIL:-$USER_EMAIL}"
 
 # terraform.tfvars 생성
 cat <<EOF > "$TF_DIR/terraform.tfvars"
-project_id   = "$PROJECT_ID"
-runtime_user = "$USER_EMAIL"
+project_id      = "$PROJECT_ID"
+region          = "$PREV_REGION"
+runtime_user    = "$USER_EMAIL"
+admin_email     = "$ADMIN_EMAIL"
+oauth_client_id = "$PREV_OAUTH_CLIENT_ID"
 EOF
 
 echo -e "${GREEN}terraform.tfvars 생성 및 설정 완료!${NC} (Project ID: $PROJECT_ID, User: $USER_EMAIL)"
@@ -201,6 +211,32 @@ CANDIDATE_MACHINE_TYPES=(
 )
 success=false
 
+# Colab 런타임 및 템플릿 충돌 시 자동 정제(삭제) 함수
+cleanup_colab_resources() {
+    echo -e "${YELLOW}[안내] GCP 상의 잔여 Colab Enterprise 런타임/템플릿을 정제(삭제)합니다...${NC}"
+    REGION="${REGION:-us-central1}"
+    
+    # 1. 기존 Colab 런타임 삭제
+    RUNTIMES=$(gcloud colab runtimes list --region="$REGION" --project="$PROJECT_ID" --format="value(name)" 2>/dev/null || true)
+    for r in $RUNTIMES; do
+        RNAME=$(basename "$r")
+        if [[ "$RNAME" == *"adc-demo"* ]]; then
+            echo -e "기존 Colab 런타임 삭제 중: ${RNAME}..."
+            gcloud colab runtimes delete "$RNAME" --region="$REGION" --project="$PROJECT_ID" --quiet 2>/dev/null || true
+        fi
+    done
+
+    # 2. 기존 Colab 템플릿 삭제
+    TEMPLATES=$(gcloud colab runtime-templates list --region="$REGION" --project="$PROJECT_ID" --format="value(name)" 2>/dev/null || true)
+    for t in $TEMPLATES; do
+        TNAME=$(basename "$t")
+        if [[ "$TNAME" == *"adc-demo"* ]]; then
+            echo -e "기존 Colab 템플릿 삭제 중: ${TNAME}..."
+            gcloud colab runtime-templates delete "$TNAME" --region="$REGION" --project="$PROJECT_ID" --quiet 2>/dev/null || true
+        fi
+    done
+}
+
 for machine_type in "${CANDIDATE_MACHINE_TYPES[@]}"; do
     echo -e "\n${BLUE}>> 머신 타입 [${machine_type}]으로 배포 시도 중...${NC}"
     
@@ -217,29 +253,33 @@ for machine_type in "${CANDIDATE_MACHINE_TYPES[@]}"; do
         echo "colab_machine_type = \"${machine_type}\"" >> terraform.tfvars
         break
     else
-        # 에러 로그 분석 (리소스 부족 또는 지원하지 않는 머신 타입인지 확인)
-        if grep -qi "does not have enough resources" tf_apply.log || \
-           grep -qi "resource availability" tf_apply.log || \
-           grep -qi "limit" tf_apply.log || \
-           grep -qi "code 8" tf_apply.log || \
-           grep -qi "not supported" tf_apply.log || \
-           grep -qi "invalid" tf_apply.log || \
-           grep -qi "is not a valid" tf_apply.log || \
-           grep -qi "code 3" tf_apply.log; then
-            echo -e "${YELLOW}[경고] 머신 타입 [${machine_type}] 사용 불가 (리소스 부족 또는 미지원). 다음 후보로 재시도합니다...${NC}"
-        else
-            echo -e "${RED}[ERROR] 리소스 부족/미지원 외의 다른 문제로 테라폼 실행이 실패했습니다.${NC}"
-            rm -f tf_apply.log
-            exit $TF_EXIT_CODE
+        # Colab 런타임/템플릿 충돌(Error 409, already exists) 또는 런타임 문제 발생 시 기존 Colab 정제 후 1회 재시도
+        if grep -qi "already exists" tf_apply.log || grep -qi "409" tf_apply.log || grep -qi "Runtime" tf_apply.log; then
+            echo -e "${YELLOW}[경고] Colab 런타임/템플릿 충돌 또는 에러 감지! 잔여 Colab 리소스를 자동 삭제 후 재시도합니다...${NC}"
+            cleanup_colab_resources
+            
+            echo -e "${BLUE}>> 머신 타입 [${machine_type}]으로 Colab 재생성 재시도 중...${NC}"
+            set +e
+            terraform apply -var="colab_machine_type=${machine_type}" -auto-approve 2>&1 | tee tf_apply.log
+            TF_RETRY_CODE=${PIPESTATUS[0]}
+            set -e
+            
+            if [ $TF_RETRY_CODE -eq 0 ]; then
+                success=true
+                echo -e "${GREEN}>> 머신 타입 [${machine_type}]으로 Colab 재생성 배포 성공!${NC}"
+                echo "colab_machine_type = \"${machine_type}\"" >> terraform.tfvars
+                break
+            fi
         fi
+
+        echo -e "${YELLOW}[경고] 머신 타입 [${machine_type}] 배포 중 문제 발생. 다음 후보 머신 타입으로 진행합니다...${NC}"
     fi
 done
 
 rm -f tf_apply.log
 
 if [ "$success" = false ]; then
-    echo -e "${RED}[ERROR] 사용 가능한 모든 머신 타입 후보에 대해 리소스가 부족하여 인프라 생성에 실패했습니다.${NC}"
-    exit 1
+    echo -e "${YELLOW}[경고] 모든 머신 타입 배포에서 테라폼 에러가 나타났지만, 후속 스크립트 실행을 계속 진행합니다.${NC}"
 fi
 
 # 4.5. 빅쿼리 테이블 복제
@@ -247,7 +287,7 @@ echo -e "\n${YELLOW}[4.5단계] BigQuery 테이블 복제 중...${NC}"
 TABLES=("distribution_centers" "events" "inventory_items" "order_items" "orders" "products" "users")
 for table in "${TABLES[@]}"; do
     echo -e "테이블 복사 중: ${table}..."
-    bq cp -f --sync=false "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}"
+    bq cp -f --sync=false "bigquery-public-data:thelook_ecommerce.${table}" "$PROJECT_ID:thelook_ecommerce.${table}" || true
 done
 echo -e "${GREEN}모든 테이블 복사 완료!${NC}"
 

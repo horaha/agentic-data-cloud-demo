@@ -39,6 +39,12 @@ module "apis" {
     # BigQuery Data Analytics Gemini API 활성화 (BigQuery Conversational Analytics)
     "geminidataanalytics.googleapis.com",
     # Dataform (BigQuery SQL ELT 파이프라인 관리)
-    "dataform.googleapis.com"
+    "dataform.googleapis.com",
+    # Artifact Registry (컨테이너 이미지 저장소)
+    "artifactregistry.googleapis.com",
+    # Cloud Run (컨테이너 서버 리스 구동)
+    "run.googleapis.com",
+    # Cloud Build (도커 빌드용)
+    "cloudbuild.googleapis.com"
   ]
 }

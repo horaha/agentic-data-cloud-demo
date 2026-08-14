@@ -3,3 +3,6 @@ project_id         = "your-gcp-project-id"
 region             = "us-central1"
 colab_machine_type = "n2-standard-2"
 
+# Business UI Variables
+oauth_client_id    = "your-google-oauth-client-id.apps.googleusercontent.com"
+admin_email        = "your-admin-email@example.com"

@@ -69,3 +69,18 @@ crash.*.log
 
 # Override lock file to allow committing it (Terraform best practice)
 !**/.terraform.lock.hcl
+
+# Node / Web Application (business-ui)
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/coverage/
+**/.env
+**/.env.*
+!**/.env.example
+**/*.local
+**/stats.html
+business-ui/package-lock.json
+business-ui/yarn.lock
+business-ui/.yarn/
+business-ui/.yarnrc.yml

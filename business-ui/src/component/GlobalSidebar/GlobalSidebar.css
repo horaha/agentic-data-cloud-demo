@@ -1,0 +1,192 @@
+/* Global Sidebar Styles */
+
+.global-sidebar {
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
+  height: 100vh;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 20px;
+  gap: 40px;
+  background-color: #FEFEFF;
+  border-right: 1px solid #E8EEF5;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1200;
+}
+
+/* Menu Items Container */
+.sidebar-menu-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  flex: 1;
+}
+
+/* Individual Menu Item */
+.sidebar-menu-item {
+  width: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.sidebar-menu-item.single-line {
+  height: 68px;
+}
+
+.sidebar-menu-item.two-line {
+  height: 84px;
+}
+
+/* Icon container (pill shape) */
+.menu-icon-container {
+  width: 56px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+/* Active state — tinted cell background */
+.sidebar-menu-item.active {
+  background: rgba(234, 238, 250, 0.6);
+}
+
+/* Hover state (inactive items) */
+.sidebar-menu-item:not(.active):not(.disabled):hover {
+  background: rgba(234, 238, 250, 0.6);
+}
+
+/* Material Symbols icon */
+.sidebar-icon {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  color: #6A6E7B;
+  transition: font-variation-settings 0.3s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-menu-item:not(.active):not(.disabled):hover .sidebar-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  transform: scale(1.10);
+}
+
+.sidebar-menu-item.active .sidebar-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  color: #022FCD;
+  transform: scale(1.10);
+}
+
+/* Menu label */
+.menu-label {
+  width: 96px;
+  font-family: 'Google Sans', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  letter-spacing: 0.1px;
+  color: #6A6E7B;
+  transition: color 0.2s ease;
+}
+
+.sidebar-menu-item.active .menu-label {
+  color: #022FCD;
+}
+
+/* Disabled state */
+.sidebar-menu-item.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.sidebar-menu-item.disabled .menu-icon-container {
+  background-color: transparent;
+}
+
+/* Version number */
+.sidebar-version {
+  font-size: 10px;
+  color: #6A6E7B;
+  opacity: 0.5;
+  letter-spacing: 0.2px;
+  align-self: center;
+}
+
+/* Responsive: Hide sidebar on mobile */
+@media (max-width: 768px) {
+  .global-sidebar {
+    display: none;
+  }
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .global-sidebar {
+    width: 96px;
+    min-width: 96px;
+  }
+}
+
+.dp-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+}
+
+.dp-icon .dp-outline,
+.dp-icon .dp-filled {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Outline: fully visible by default, retreats from the left on reveal */
+.dp-icon .dp-outline {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.35s ease;
+}
+
+/* Filled: clipped away from the right by default */
+.dp-icon .dp-filled {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.35s ease;
+}
+
+/* On hover/active: filled grows in from the left, outline retreats from the left */
+.sidebar-menu-item:not(.disabled):hover .dp-icon .dp-filled,
+.sidebar-menu-item.active .dp-icon .dp-filled {
+  clip-path: inset(0 0 0 0);
+}
+
+.sidebar-menu-item:not(.disabled):hover .dp-icon .dp-outline,
+.sidebar-menu-item.active .dp-icon .dp-outline {
+  clip-path: inset(0 0 0 100%);
+}
+
+/* Data Products: scale a bit more than the other icons */
+.sidebar-menu-item:not(.active):not(.disabled):hover .dp-icon .sidebar-icon {
+  transform: scale(1.20);
+}
+
+.sidebar-menu-item.active .dp-icon .sidebar-icon {
+  transform: scale(1.20);
+}
