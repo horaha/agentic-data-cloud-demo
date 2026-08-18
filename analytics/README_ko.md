@@ -15,7 +15,6 @@
 
 - `resources/`: 용어집 정의 및 매핑 설정을 위한 리소스 파일들
   - [agent_test_queries.md](resources/agent_test_queries.md): 대화형 분석 에이전트 검증을 위한 물리 매핑 규칙 가이드 및 시나리오별 예상 SQL 레퍼런스 문서.
-  - [aspect_sql_mapping.json](resources/aspect_sql_mapping.json): SQL 매핑을 위한 Dataplex Aspect의 JSON 스키마 정의.
   - [business_glossary.json](resources/business_glossary.json): 비즈니스 용어 정의 메타데이터.
 
 ## 로컬 개발 및 테스트 가이드

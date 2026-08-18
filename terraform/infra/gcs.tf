@@ -20,14 +20,6 @@ resource "google_storage_bucket_object" "business_glossary" {
   depends_on = [module.resource_bucket]
 }
 
-# SQL 매핑 Aspect 스키마 JSON 파일 업로드
-resource "google_storage_bucket_object" "aspect_sql_mapping" {
-  name   = "resources/aspect_sql_mapping.json"
-  source = "../../analytics/resources/aspect_sql_mapping.json"
-  bucket = "metadata-resources-${var.project_id}"
-
-  depends_on = [module.resource_bucket]
-}
 
 
 

@@ -15,7 +15,6 @@ This directory is used for analyzing and testing datasets, specifically the BigQ
 
 - `resources/`: Supporting configuration and schema mapping files.
   - [agent_test_queries.md](resources/agent_test_queries.md): Verification guide and physical mapping scenarios.
-  - [aspect_sql_mapping.json](resources/aspect_sql_mapping.json): Aspect schema definition for SQL mapping.
   - [business_glossary.json](resources/business_glossary.json): The custom Business Glossary terms.
 
 ## Local Development & Testing Guide

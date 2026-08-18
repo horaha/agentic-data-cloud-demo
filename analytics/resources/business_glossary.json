@@ -23,12 +23,7 @@
       "thelook_ecommerce.users",
       "thelook_ecommerce.orders",
       "thelook_ecommerce.order_items"
-    ],
-    "sql_mapping": {
-      "type": "SQL_Filter",
-      "table": "thelook_ecommerce.users",
-      "condition": "id IN (SELECT user_id FROM thelook_ecommerce.order_items GROUP BY user_id HAVING SUM(sale_price) >= 500 OR COUNT(DISTINCT order_id) >= 5)"
-    }
+    ]
   },
   {
     "category": "고객 분석",
@@ -52,12 +47,7 @@
     "related_tables": [
       "thelook_ecommerce.users",
       "thelook_ecommerce.events"
-    ],
-    "sql_mapping": {
-      "type": "Node_Attribute",
-      "table": "thelook_ecommerce.users",
-      "attribute": "traffic_source"
-    }
+    ]
   },
   {
     "category": "고객 분석",
@@ -80,12 +70,7 @@
     "related_tables": [
       "thelook_ecommerce.users",
       "thelook_ecommerce.orders"
-    ],
-    "sql_mapping": {
-      "type": "SQL_Filter",
-      "table": "thelook_ecommerce.users",
-      "condition": "id NOT IN (SELECT DISTINCT user_id FROM thelook_ecommerce.orders WHERE created_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 90 DAY))"
-    }
+    ]
   },
   {
     "category": "고객 분석",
@@ -106,12 +91,7 @@
     ],
     "related_tables": [
       "thelook_ecommerce.users"
-    ],
-    "sql_mapping": {
-      "type": "SQL_Filter",
-      "table": "thelook_ecommerce.users",
-      "condition": "created_at >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)"
-    }
+    ]
   },
   {
     "category": "고객 분석",
@@ -133,12 +113,7 @@
     ],
     "related_tables": [
       "thelook_ecommerce.events"
-    ],
-    "sql_mapping": {
-      "type": "Web_Analytics",
-      "table": "thelook_ecommerce.events",
-      "expression": "COUNT(DISTINCT CASE WHEN event_type = 'Cart' AND session_id NOT IN (SELECT DISTINCT session_id FROM thelook_ecommerce.events WHERE event_type = 'Purchase') THEN session_id END) / COUNT(DISTINCT CASE WHEN event_type = 'Cart' THEN session_id END) * 100"
-    }
+    ]
   },
   {
     "category": "상품 및 추천",
@@ -160,11 +135,7 @@
     "related_tables": [
       "thelook_ecommerce.products",
       "thelook_ecommerce.order_items"
-    ],
-    "sql_mapping": {
-      "type": "SQL_Expression",
-      "expression": "(retail_price - cost) / retail_price * 100"
-    }
+    ]
   },
   {
     "category": "물류 및 공급망",
@@ -212,12 +183,7 @@
     "related_tables": [
       "thelook_ecommerce.orders",
       "thelook_ecommerce.order_items"
-    ],
-    "sql_mapping": {
-      "type": "SQL_Filter",
-      "table": "thelook_ecommerce.order_items",
-      "condition": "status IN ('Returned', 'Cancelled')"
-    }
+    ]
   },
   {
     "category": "물류 및 공급망",
@@ -241,11 +207,7 @@
     "related_tables": [
       "thelook_ecommerce.orders",
       "thelook_ecommerce.order_items"
-    ],
-    "sql_mapping": {
-      "type": "SQL_Expression",
-      "expression": "AVG(TIMESTAMP_DIFF(delivered_at, shipped_at, DAY))"
-    }
+    ]
   },
   {
     "category": "물류 및 공급망",
@@ -269,11 +231,6 @@
     "related_tables": [
       "thelook_ecommerce.orders",
       "thelook_ecommerce.order_items"
-    ],
-    "sql_mapping": {
-      "type": "SQL_Expression",
-      "table": "thelook_ecommerce.order_items",
-      "expression": "COUNTIF(status IN ('Returned', 'Cancelled')) / COUNT(*) * 100"
-    }
+    ]
   }
 ]
